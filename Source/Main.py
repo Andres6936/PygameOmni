@@ -48,20 +48,20 @@ def OnInitGame(MAP_WIDTH, MAP_HEIGHT):
 
     #load monster images
     monster_images = [
-        'Graficas/Ikoner/giant_cockroach.png',
-        'Graficas/Ikoner/brain_worm.png',
-        'Graficas/Ikoner/mummy.png',
-        'Graficas/Ikoner/ogre_mage.png',
-        'Graficas/Ikoner/red_dragon.png',
+        'Graficas/Ikoner/Enemigos/giant_cockroach.png',
+        'Graficas/Ikoner/Enemigos/brain_worm.png',
+        'Graficas/Ikoner/Enemigos/mummy.png',
+        'Graficas/Ikoner/Enemigos/ogre_mage.png',
+        'Graficas/Ikoner/Enemigos/red_dragon.png',
     ]
 
     monster_tiles = [pygame.image.load(img).convert_alpha() for img in monster_images]
 
     #Load item images
-    door_image = 'Graficas/Ikoner/wooden_door.png'
-    armor_image = 'Graficas/Ikoner/armor.png'
-    food_image = 'Graficas/Ikoner/potion.png'
-    weapon_image = 'Graficas/Ikoner/sword.png'
+    door_image = 'Graficas/Ikoner/Items/Tiles/wooden_door.png'
+    armor_image = 'Graficas/Ikoner/Items/Armaduras/armor.png'
+    food_image = 'Graficas/Ikoner/Items/Pociones/potion.png'
+    weapon_image = 'Graficas/Ikoner/Items/Armas/sword.png'
 
     armor_tile = pygame.image.load(armor_image).convert_alpha()
     food_tile = pygame.image.load(food_image).convert_alpha()
@@ -69,7 +69,7 @@ def OnInitGame(MAP_WIDTH, MAP_HEIGHT):
     door_tile = pygame.image.load(door_image).convert_alpha()
 
     #create player object
-    player_image = pygame.image.load('Graficas/Ikoner/player.png').convert_alpha()
+    player_image = pygame.image.load('Graficas/Ikoner/Player/player.png').convert_alpha()
     player = Player.Player(screen, posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT,
                                                                                                       16)), object_image=player_image, object_cave=cave, dungeon_level=dungeonLevel)
 

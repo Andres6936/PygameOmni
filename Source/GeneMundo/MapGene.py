@@ -15,8 +15,8 @@ WALLFACTOR = 5  # CA rule one
 WALLFACTOR2 = 0  # CA rule two
 FILLFACTOR = 40  # 45% of the tiles will initially be ground tiles
 
-WALL_TILE = 'Graficas/Ikoner/wall_16.png'
-GROUND_TILE = 'Graficas/Ikoner/ground3_16.png'
+WALL_TILE = 'Graficas/Ikoner/Items/Tiles/wall_16.png'
+GROUND_TILE = 'Graficas/Ikoner/Items/Tiles/ground3_16.png'
 
 
 class Tile:
