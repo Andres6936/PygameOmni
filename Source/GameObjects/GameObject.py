@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import pygame, random
+import pygame
+import random
+
 from pygame.sprite import Sprite
 
 PIXELES = 16 #width and height of a tile
@@ -91,17 +93,19 @@ class MovableCharacter(GameObject):
         """
         self.posicion = ((self.getXposition() + x), (self.getYposition() + y))
 
-    def getHP(self):
-        """Get hitpoint
-           @return: Value hitpoint for monster or player
+    def GetVitalidad(self):
         """
-        return self.hitPoints
+        Metodo que devuelve la vitalidad del Jugador o Enemigo.
+        @return: Valor de la vitalidad del Jugador o Enemigo.
+        """
+        return self.vitalidad
 
-    def getArmor(self):
-        """Get armor
-           @return: value of armoer for monster or player
+    def GetDefensa(self):
         """
-        return self.armor
+        Metodo que devuelve la defensa del Jugador o Enemigo.
+        @return: Valor de la defensa del Jugador o Enemigo.
+        """
+        return self.defensa
 
     def getAttackPower(self):
         """Get attack power
@@ -109,15 +113,19 @@ class MovableCharacter(GameObject):
         """
         return self.attackPower
 
-    def increaseHP(self, amount):
-        """Increase hitpoint with value of amount
+    def IncrementarVitalidad(self, cantidad):
         """
-        self.hitPoints += amount
+        Metodo que incrementa la vitalidad del Enemigo o Jugador, se suma el valor pasado por parametro.
+        @param cantidad : Valor int que se suma a la vitalidad del Enemigo o Jugador.
+        """
+        self.vitalidad += cantidad
 
-    def increaseArmor(self, amount):
-        """Increase armor with value of amount
+    def IncrementarDefensa(self, cantidad):
         """
-        self.armor += amount
+        Metodo que incrementa la defensa del Enemigo o Jugador, se suma el valor pasado por parametro.
+        @param cantidad : Valor int que se suma a la defensa del Enemigo o Jugador.
+        """
+        self.defensa += cantidad
 
     def increaseAP(self, amount):
         """Increase attack power with value of amount
@@ -129,10 +137,10 @@ class MovableCharacter(GameObject):
         """
 
         #Does hitpoints get under 0?
-        if (self.hitPoints - amount) <= 0:
-            self.hitPoints = 0
+        if (self.vitalidad - amount) <= 0:
+            self.vitalidad = 0
         else:
-            self.hitPoints -= amount
+            self.vitalidad -= amount
 
     def checkValidMove(self, y, x, monsterList, player):
         """Check if a move is legal
@@ -157,9 +165,10 @@ class Monster( MovableCharacter ):
            Send all parameters to super-class MovableCharacter
         """
         super(Monster, self).__init__(screen, posicion, object_image, object_cave, dungeon_level)
+
         self.direction = DIRECTION[random.randint(0, len(DIRECTION)-1)]
-        self.hitPoints = 25 + (dungeon_level*4) #HP
-        self.armor = 2 + (dungeon_level * 2)  #Armor reduces damage taken
+        self.vitalidad = 25 + (dungeon_level * 4) # Vitalidad.
+        self.defensa = 2 + (dungeon_level * 2)    # Defensa reduce el daño recibido.
         self.attackPower = 6 + (dungeon_level*2)  #Attackpower increases damage done
 
     def walk(self, monsterList, player):

@@ -25,7 +25,7 @@ STATS_BOX_OFFSET = 10
 dungeonLevel = 1 #dungeon level starts at 1
 
 
-def OnInitGame(MAP_WIDTH, MAP_HEIGHT):
+def OnInitGame( MAP_WIDTH, MAP_HEIGHT ):
     """
     This method initializes and sets up the game
     @param MAP_WIDTH: the map(playable area) width
@@ -44,7 +44,7 @@ def OnInitGame(MAP_WIDTH, MAP_HEIGHT):
     pygame.display.set_caption("INF3331 Roguelike Project")
 
     # Create the first cave. This can take a couple of seconds to make
-    cave = MapGene.run_mapgen(MAP_WIDTH, MAP_HEIGHT, screen)
+    cave = MapGene.run_mapgen( MAP_WIDTH, MAP_HEIGHT, screen )
 
     #load monster images
     monster_images = [
@@ -161,7 +161,7 @@ def removeMonster(monsters):
     """
 
     for m in monsters:
-        if m.getHP() <= 0:
+        if m.GetVitalidad() <= 0:
             monsters.remove(m)
 
 def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon_tile, door_tile, MAP_HEIGHT, MAP_WIDTH):
@@ -217,7 +217,7 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
 
                     for item in items:
                         if item.getPosition() == player.getPosition():
-                            if item.getItemName() == "Puerta de Madera":
+                            if item.GetItemNombre() == "Puerta de Madera":
                                 #Increase dungeonlevel
                                 dungeonLevel += 1
                                 #make new cave
@@ -230,21 +230,21 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
                                 items = make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapon_tile, door_tile)
                                 gameMessage = "Nuevo nivel de mazmorra! " + gameMessage
 
-                            elif item.getItemName() == "weapon":
-                                player.increaseAP(item.useItem())
-                                gameMessage = "Has recogido una espada! Tu poder de ataque se incrementa en " + str(item.useItem()) \
+                            elif item.GetItemNombre() == "weapon":
+                                player.increaseAP(item.UsarItem())
+                                gameMessage = "Has recogido una espada! Tu poder de ataque se incrementa en " + str(item.UsarItem()) \
                                                + "! " + gameMessage
                                 items.remove(item)
 
-                            elif item.getItemName() == "armor":
-                                player.increaseArmor(item.useItem())
-                                gameMessage = "Has recogido una pieza de armadura! Tu armadura se incrementa en " + str(item.useItem()) \
+                            elif item.GetItemNombre() == "armor":
+                                player.IncrementarDefensa(item.UsarItem())
+                                gameMessage = "Has recogido una pieza de armadura! Tu armadura se incrementa en " + str(item.UsarItem()) \
                                                + "! " + gameMessage
                                 items.remove(item)
 
-                            elif item.getItemName() == "food":
-                                player.increaseHP(item.useItem())
-                                gameMessage = "Has recogido una pocion! Hit points increased by " + str(item.useItem()) \
+                            elif item.GetItemNombre() == "food":
+                                player.IncrementarVitalidad(item.UsarItem())
+                                gameMessage = "Has recogido una pocion! Hit points increased by " + str(item.UsarItem()) \
                                                + "! " + gameMessage
 
                                 items.remove(item)

@@ -40,9 +40,9 @@ def calculateOutcome(monster, player, monsters):
        """
 
     #The damage done is the difference between the players attack power and the monsters armor
-    damageDone = player.getAttackPower() - monster.getArmor()
+    damageDone = player.getAttackPower() - monster.GetDefensa()
     monster.decreaseHP(damageDone)
-    if monster.getHP() <= 0:
+    if monster.GetVitalidad() <= 0:
         monsters.remove(monster)
         return (True, damageDone) #monster died
     else:
@@ -55,7 +55,7 @@ def calculateOutcome2(player, monster):
        @return: the difference between the monsters attack power and the players armor
     """
 
-    return monster.getAttackPower() - player.getArmor()
+    return monster.getAttackPower() - player.GetDefensa()
 
 def monsterAttack(monsters, player):
     """The monsters attack the player
@@ -78,7 +78,7 @@ def monsterAttack(monsters, player):
     #player loses HP
     player.decreaseHP(damageDone)
 
-    return (player.getHP() <= 0, damageDone)
+    return (player.GetVitalidad() <= 0, damageDone)
 
 def playerIsAdjacent(monster, player):
     """Check if the player is adjacent to a monster

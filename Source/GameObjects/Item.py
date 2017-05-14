@@ -14,8 +14,8 @@ class Item( GameObject ):
         Send all parameter except name and value to super-class GameObject
         """
         super(Item, self).__init__(screen, posicion, object_image, object_cave)
-        self.itemName = nombre
-        self.itemValue = valor
+        self.itemNombre = nombre
+        self.itemValor = valor
 
     def getPosition(self):
         """Get the position in tuple
@@ -23,14 +23,15 @@ class Item( GameObject ):
         """
         return (self.getXposition(), self.getYposition())
 
-    def useItem(self):
+    def UsarItem(self):
         """If a item is picked up
            @return: The value of that item
         """
-        return self.itemValue
+        return self.itemValor
 
-    def getItemName(self):
-        """Get the name of the item
-           @return: name of the item
+    def GetItemNombre(self):
         """
-        return self.itemName
+        Metodo que devuelve el nombre del Item.
+        @return: Nombre del Item.
+        """
+        return self.itemNombre
