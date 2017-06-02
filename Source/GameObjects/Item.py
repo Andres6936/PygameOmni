@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf-8
 
-from GameObject import GameObject
+from Source.GameObjects.GameObject import GameObject
 
 class Item( GameObject ):
     """
