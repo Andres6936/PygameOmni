@@ -40,7 +40,7 @@ class Tile:
         """Draw the tile image on the screen"""
         self.screen.blit(self.tile_image, self.position)
 
-    def isPassable(self):
+    def IsTransitable(self):
         """Check if this tile is passable or not
            @return: true if this tile is passable, false if not
         """
@@ -88,7 +88,7 @@ def calculateNearbyWalls(tile, cave):
             # skip self
             if y == 0 and y == x:
                 continue
-            if not cave[(tile.getYposition() / 16) + y][(tile.getXposition() / 16) + x].isPassable():
+            if not cave[int(tile.getYposition() / 16) + y][int(tile.getXposition() / 16) + x].IsTransitable():
                 numwalls += 1
 
     return numwalls
@@ -184,14 +184,14 @@ def updateCave(screen, cave, direction, xpos, ypos):
 
     ground_image = pygame.image.load(GROUND_TILE).convert_alpha()
 
-    if direction == 'D' and cave[(ypos / 16) + 1][xpos / 16].isDigable():  # Dig down
-        cave[(ypos / 16) + 1][xpos / 16].updateTile(True, ground_image)
+    if direction == 'D' and cave[int(ypos / 16) + 1][int(xpos / 16)].isDigable():  # Dig down
+        cave[int(ypos / 16) + 1][int(xpos / 16)].updateTile(True, ground_image)
 
-    elif direction == 'U' and cave[(ypos / 16) - 1][xpos / 16].isDigable():  # Dig up
-        cave[(ypos / 16) - 1][xpos / 16].updateTile(True, ground_image)
+    elif direction == 'U' and cave[int(ypos / 16) - 1][int(xpos / 16)].isDigable():  # Dig up
+        cave[int(ypos / 16) - 1][int(xpos / 16)].updateTile(True, ground_image)
 
-    elif direction == 'L' and cave[(ypos / 16)][(xpos / 16) - 1].isDigable():  # Dig up
-        cave[(ypos / 16)][(xpos / 16) - 1].updateTile(True, ground_image)
+    elif direction == 'L' and cave[int(ypos / 16)][int(xpos / 16) - 1].isDigable():  # Dig up
+        cave[int(ypos / 16)][int(xpos / 16) - 1].updateTile(True, ground_image)
 
-    elif direction == 'R' and cave[(ypos / 16)][(xpos / 16) + 1].isDigable():  # Dig up
-        cave[(ypos / 16)][(xpos / 16) + 1].updateTile(True, ground_image)
+    elif direction == 'R' and cave[int(ypos / 16)][int(xpos / 16) + 1].isDigable():  # Dig up
+        cave[int(ypos / 16)][int(xpos / 16) + 1].updateTile(True, ground_image)
