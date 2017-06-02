@@ -5,27 +5,32 @@
    and running the game, aswell as creating different game objects.
 """
 
-import pygame
-import sys
 import random
+import sys
 import time
+import pygame
 
-from GeneMundo import MapGene
-from GameScreen import Gamescreen
-from GameSystemBatalla import BattleCalc
-from GameObjects import GameObject
-from GameObjects import Player
-from GameObjects import Item
+from Source.Enum.Enumerandos import EnumImage
+from Source.GameObjects.GameObject import Monster
+from Source.GameObjects.Item import Item
+from Source.GameObjects.Player import Player
+from Source.GameScreen import Gamescreen
+from Source.GameSystemBatalla import BattleCalc
+from Source.GeneMundo import MapGene
 
-""" Game Constantes """
-MONSTER_COUNT = 15
-STATS_BOX_WIDTH = 200
-MESSAGE_BOX_HEIGHT = 64
-STATS_BOX_OFFSET = 10
-dungeonLevel = 1 #dungeon level starts at 1
+""" Constantes del la App. """
+
+MONSTER_COUNT:      int = 15
+STATS_BOX_WIDTH:    int = 200
+MESSAGE_BOX_HEIGHT: int = 64
+STATS_BOX_OFFSET:   int = 10
+
+""" Atributos de la App. """
+
+dungeonLevel: int = 1 #dungeon level starts at 1
 
 
-def OnInitGame( MAP_WIDTH, MAP_HEIGHT ):
+def OnInitGame( MAP_WIDTH: int, MAP_HEIGHT: int ):
     """
     This method initializes and sets up the game
     @param MAP_WIDTH: the map(playable area) width
@@ -48,33 +53,27 @@ def OnInitGame( MAP_WIDTH, MAP_HEIGHT ):
 
     #load monster images
     monster_images = [
-        'Graficas/Ikoner/Enemigos/giant_cockroach.png',
-        'Graficas/Ikoner/Enemigos/brain_worm.png',
-        'Graficas/Ikoner/Enemigos/mummy.png',
-        'Graficas/Ikoner/Enemigos/ogre_mage.png',
-        'Graficas/Ikoner/Enemigos/red_dragon.png',
+        EnumImage.CUCARACHA_GIGANTE.value,
+        EnumImage.GUSANO_CEREBRO.value,
+        EnumImage.MUMMY.value,
+        EnumImage.OGRO_MAGO.value,
+        EnumImage.DRAGON_ROJO.value
     ]
 
     monster_tiles = [pygame.image.load(img).convert_alpha() for img in monster_images]
 
-    #Load item images
-    door_image = 'Graficas/Ikoner/Items/Tiles/wooden_door.png'
-    armor_image = 'Graficas/Ikoner/Items/Armaduras/armor.png'
-    food_image = 'Graficas/Ikoner/Items/Pociones/potion.png'
-    weapon_image = 'Graficas/Ikoner/Items/Armas/sword.png'
-
-    armor_tile = pygame.image.load(armor_image).convert_alpha()
-    food_tile = pygame.image.load(food_image).convert_alpha()
-    weapon_tile = pygame.image.load(weapon_image).convert_alpha()
-    door_tile = pygame.image.load(door_image).convert_alpha()
+    PUERTA_MADERA_TILE = pygame.image.load(EnumImage.PUERTA_MADERA.value).convert_alpha()
+    ARMDURA_TILE = pygame.image.load(EnumImage.ARMADURA.value).convert_alpha()
+    POCION_TILE = pygame.image.load(EnumImage.POCION.value).convert_alpha()
+    ESPADA_TILE = pygame.image.load(EnumImage.ESPADA.value).convert_alpha()
 
     #create player object
-    player_image = pygame.image.load('Graficas/Ikoner/Player/player.png').convert_alpha()
-    player = Player.Player(screen, posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT,
-                                                                                                      16)), object_image=player_image, object_cave=cave, dungeon_level=dungeonLevel)
+    JUGADOR_TILE = pygame.image.load(EnumImage.JUGADOR.value).convert_alpha()
+    player = Player(screen, posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT,
+                                                                                                      16)), object_image=JUGADOR_TILE, object_cave=cave, dungeon_level=dungeonLevel)
 
     #Run game
-    OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon_tile, door_tile, MAP_HEIGHT, MAP_WIDTH)
+    OnRunGame(screen, cave, player, monster_tiles, ARMDURA_TILE, POCION_TILE, ESPADA_TILE, PUERTA_MADERA_TILE, MAP_HEIGHT, MAP_WIDTH)
 
 def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapon_tile, door_tile):
     """Creates the different items and put them in a list
@@ -92,7 +91,7 @@ def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapo
 
     for i in range(3):
         #Make armor item
-        items.append(Item.Item(
+        items.append(Item(
                 screen,
                 posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
                 object_image=armor_tile,
@@ -101,7 +100,7 @@ def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapo
                 valor=1))
 
         #Make weapon item
-        items.append(Item.Item(
+        items.append(Item(
                 screen,
                 posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
                 object_image=weapon_tile,
@@ -111,7 +110,7 @@ def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapo
 
     #Make food item
     for i in range(4):
-        items.append(Item.Item(
+        items.append(Item(
                 screen,
                 posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
                 object_image=food_tile,
@@ -120,7 +119,7 @@ def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapo
                 valor=20))
 
     #make door
-    items.append(Item.Item(
+    items.append(Item(
             screen,
             posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
             object_image=door_tile,
@@ -130,7 +129,7 @@ def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapo
 
     return items
 
-def make_monsters(screen, cave, MAPA_ANCHO, MAPA_ALTO, monster_tiles, dungeonLevel):
+def make_monsters(screen, cave, MAPA_ANCHO: int, MAPA_ALTO: int, monster_tiles, dungeonLevel: int):
     """
     Los enemigos cambian sus estadistidas y son asesinados en cada nivel, asi que creamos nuevos enemigos cada
     nuevo nivel que el jugador avance.
@@ -143,10 +142,10 @@ def make_monsters(screen, cave, MAPA_ANCHO, MAPA_ALTO, monster_tiles, dungeonLev
     @return: Lista con los enemigos creados.
     """
 
-    monsters = []
+    monsters: list = []
 
     for i in range( MONSTER_COUNT ):
-        monsters.append(GameObject.Monster(
+        monsters.append(Monster(
             screen,
             posicion = (random.randrange(0, MAPA_ANCHO, 16), random.randrange(0, MAPA_ALTO, 16)),
             object_image = monster_tiles[random.randint(0, len(monster_tiles)-1)],
@@ -223,7 +222,7 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
                                 #make new cave
                                 cave = MapGene.run_mapgen(MAP_WIDTH, MAP_HEIGHT, screen)
                                 #update player object
-                                player.update(cave, (random.randrange(0, MAP_WIDTH, 16), random.randrange(0,
+                                player.Update(cave, (random.randrange(0, MAP_WIDTH, 16), random.randrange(0,
                                                 MAP_HEIGHT, 16)))
                                 #make new monster list
                                 monsters = make_monsters(screen, cave, MAP_WIDTH, MAP_HEIGHT, monster_tiles, dungeonLevel)
@@ -255,7 +254,7 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
 
                     attackDir = 'D' #DEFAULT DIRECTION
 
-                    Gamescreen.make_message_box(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "Donde quieres atacar?")
+                    Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "Donde quieres atacar?")
                     pygame.display.flip()
                     pygame.event.set_blocked(pygame.KEYUP)      #Block KEYUP so its not added to the event queue
                     attackWhere = pygame.event.wait()           #Wait for an event
@@ -290,7 +289,7 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
                 #Dig down wall(D key pressed)
                 elif event.key == pygame.K_d:
 
-                    Gamescreen.make_message_box(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "Donde quieres cavar?")
+                    Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "Donde quieres cavar?")
                     pygame.display.flip()
 
                     pygame.event.set_blocked(pygame.KEYUP) #Block KEYUP so its not added to the event queue
@@ -315,13 +314,13 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
 
                         gameMessage = monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAGE_BOX_HEIGHT)
                     except:
-                        print "DEBUG: Event bugged out"
+                        print ("DEBUG: Event bugged out")
 
                 break #only one event is handled at a time, so break out of the event loop after one event is finished
 
         #Divide by 16 to get correct tile index
-        for y in range(0, MAP_HEIGHT / 16):
-            for x in range(0, MAP_WIDTH / 16):
+        for y in range(0, int(MAP_HEIGHT / 16)):
+            for x in range(0, int(MAP_WIDTH / 16)):
                 cave[y][x].Draw()
 
         #draw player, monsters and items
@@ -334,8 +333,8 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
             i.Draw()
 
         #Make stats box and display it
-        Gamescreen.make_stats_box(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
-        Gamescreen.make_message_box(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, gameMessage)
+        Gamescreen.OnInitStatBox(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
+        Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, gameMessage)
 
         #Display
         pygame.display.flip()
@@ -366,8 +365,8 @@ def monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAG
     #player died
     if monsterAttackResult[0]:
 
-        Gamescreen.make_stats_box(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
-        Gamescreen.make_message_box(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "The monster(s) around you " \
+        Gamescreen.OnInitStatBox(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
+        Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "The monster(s) around you " \
                 "slaughtered you for " + str(monsterAttackResult[1]) + " HP! Tu mueres!")
         pygame.display.flip()
         OnGameOver()
