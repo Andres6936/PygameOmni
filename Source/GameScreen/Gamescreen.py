@@ -6,14 +6,15 @@ from pygame import Rect
 from pygame import font
 from pygame import Color
 
-def make_stats_box(screen, player, dungeon_level, box_x_start, box_heigth, box_width):
-    """Create the box displaying the stats
-       @param screen: the screen to draw on
-       @param player: the player object
-       @param dungeon_level: the current dungeon level
-       @param box_x_start: rectangle upper left corner x-coordinate 
-       @param box_heigth: height of rectangle
-       @param box_width: width of rectangle
+def OnInitStatBox(screen, player, dungeon_level: int, box_x_start: int, box_heigth: int, box_width: int):
+    """
+    Create the box displaying the stats
+    @param screen: the screen to draw on
+    @param player: the player object
+    @param dungeon_level: the current dungeon level
+    @param box_x_start: rectangle upper left corner x-coordinate
+    @param box_heigth: height of rectangle
+    @param box_width: width of rectangle
     """
 
     #create the rectangle
@@ -21,25 +22,26 @@ def make_stats_box(screen, player, dungeon_level, box_x_start, box_heigth, box_w
     #set font type
     stats_font = font.SysFont('arial', 20)
     #render game info
-    player_HP = stats_font.render("Hit Points: " + str(player.GetVitalidad()), True, Color('white'))
+    player_vitalidad = stats_font.render("Vitalidad: " + str(player.GetVitalidad()), True, Color('white'))
     player_AP = stats_font.render("Poder de Ataque: " + str(player.getAttackPower()), True, Color('white'))
-    player_Armor = stats_font.render("Armadura: " + str(player.GetDefensa()), True, Color('white'))
+    player_defensa = stats_font.render("Defensa: " + str(player.GetDefensa()), True, Color('white'))
     level = stats_font.render("Nivel Mazmorra: " + str(dungeon_level), True, Color('white'))
 
     #For each line of text, draw it on the screen and move the rectangle for the next line
     screen.fill(Color('Black'), stats_box)
-    screen.blit(player_HP, stats_box)
-    screen.blit(player_AP, stats_box.move(0, player_HP.get_height()))
-    screen.blit(player_Armor, stats_box.move(0, player_HP.get_height() + player_AP.get_height()))
-    screen.blit(level, stats_box.move(0, player_HP.get_height() + player_AP.get_height() + player_Armor.get_height()))
+    screen.blit(player_vitalidad, stats_box)
+    screen.blit(player_AP, stats_box.move(0, player_vitalidad.get_height()))
+    screen.blit(player_defensa, stats_box.move(0, player_vitalidad.get_height() + player_AP.get_height()))
+    screen.blit(level, stats_box.move(0, player_vitalidad.get_height() + player_AP.get_height() + player_defensa.get_height()))
 
-def make_message_box(screen, box_y_start, box_heigth, box_width, gameMessage):
-    """Make the box/rectangle displaying the game messages
-       @param screen: the screen to draw on
-       @param box_y_start: rectangle upper left y-coordinate
-       @param box_heigth: message rectangle height
-       @param box_width: message rectangle width
-       @gameMessage: the message to display
+def OnMessageBox(screen, box_y_start, box_heigth, box_width, gameMessage):
+    """
+    Make the box/rectangle displaying the game messages
+    @param screen: the screen to draw on
+    @param box_y_start: rectangle upper left y-coordinate
+    @param box_heigth: message rectangle height
+    @param box_width: message rectangle width
+    @gameMessage: the message to display
     """
 
     #Create rectangle
