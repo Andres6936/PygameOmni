@@ -3,8 +3,8 @@
 
 import pygame
 
-from GameObject import MovableCharacter
-from GameObject import PIXELES
+from Source.GameObjects.GameObject import MovableCharacter
+from Source.GameObjects.GameObject import PIXELES
 
 class Player( MovableCharacter ):
     """Class for playable character"""
