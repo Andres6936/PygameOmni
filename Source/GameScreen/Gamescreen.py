@@ -22,10 +22,10 @@ def OnInitStatBox(screen, player, dungeon_level: int, box_x_start: int, box_heig
     #set font type
     stats_font = font.SysFont('arial', 20)
     #render game info
-    player_vitalidad = stats_font.render("Vitalidad: " + str(player.GetVitalidad()), True, Color('white'))
+    player_vitalidad = stats_font.render("Vitalidad: " + str(player.GetVitalidad()), True, Color('red'))
     player_AP = stats_font.render("Poder de Ataque: " + str(player.getAttackPower()), True, Color('white'))
     player_defensa = stats_font.render("Defensa: " + str(player.GetDefensa()), True, Color('white'))
-    level = stats_font.render("Nivel Mazmorra: " + str(dungeon_level), True, Color('white'))
+    level = stats_font.render("Nivel Mazmorra: " + str(dungeon_level), True, Color('green'))
 
     #For each line of text, draw it on the screen and move the rectangle for the next line
     screen.fill(Color('Black'), stats_box)
