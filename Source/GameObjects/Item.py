@@ -14,6 +14,7 @@ class Item( GameObject ):
         Send all parameter except name and value to super-class GameObject
         """
         super(Item, self).__init__(screen, posicion, object_image, object_cave)
+
         self.itemNombre = nombre
         self.itemValor = valor
 
