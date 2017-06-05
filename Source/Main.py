@@ -10,22 +10,20 @@ import sys
 import time
 import pygame
 
-from Source.Enum.Enumerandos import EnumImage
-from Source.GameObjects.GameObject import Monster
-from Source.GameObjects.Item import Item
-from Source.GameObjects.Player import Player
+from Source.Enum.EnumImage import EnumImage
 from Source.GameScreen import Gamescreen
 from Source.GameSystemBatalla import BattleCalc
-from Source.GeneMundo import MapGene
+from Source.GameMundo import MapGene
+from Source.GameMundo.MapFactory import Factory
 
-""" Constantes del la App. """
+# CONSTANTES DE LA APP
 
 MONSTER_COUNT:      int = 15
 STATS_BOX_WIDTH:    int = 200
 MESSAGE_BOX_HEIGHT: int = 64
 STATS_BOX_OFFSET:   int = 10
 
-""" Atributos de la App. """
+# ATRIBUTOS DE LA APP
 
 dungeonLevel: int = 1 #dungeon level starts at 1
 
@@ -62,97 +60,36 @@ def OnInitGame( MAP_WIDTH: int, MAP_HEIGHT: int ):
 
     monster_tiles = [pygame.image.load(img).convert_alpha() for img in monster_images]
 
-    PUERTA_MADERA_TILE = pygame.image.load(EnumImage.PUERTA_MADERA.value).convert_alpha()
-    ARMDURA_TILE = pygame.image.load(EnumImage.ARMADURA.value).convert_alpha()
-    POCION_TILE = pygame.image.load(EnumImage.POCION.value).convert_alpha()
-    ESPADA_TILE = pygame.image.load(EnumImage.ESPADA.value).convert_alpha()
-
     #create player object
-    JUGADOR_TILE = pygame.image.load(EnumImage.JUGADOR.value).convert_alpha()
-    player = Player(screen, posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT,
-                                                                                                      16)), object_image=JUGADOR_TILE, object_cave=cave, dungeon_level=dungeonLevel)
+    player = Factory().onFactoryJugador(screen, cave, dungeonLevel)
 
     #Run game
-    OnRunGame(screen, cave, player, monster_tiles, ARMDURA_TILE, POCION_TILE, ESPADA_TILE, PUERTA_MADERA_TILE, MAP_HEIGHT, MAP_WIDTH)
+    OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT, MAP_WIDTH)
 
-def make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapon_tile, door_tile):
+def make_items(screen, cave):
     """Creates the different items and put them in a list
        @param screen: the game screen to draw
        @param cave: the map
-       @param MAP_WIDTH: the map width (playable area) in pixels
-       @param MAP_HEIGHT: the map heith (playable area) in pixels
-       @param armor_tile: armor image
-       @param food_tile: potion image
-       @param weapon_tile: weapon image
-       @param door_tile: door image
        @return: list of items
     """
     items = []
 
     for i in range(3):
         #Make armor item
-        items.append(Item(
-                screen,
-                posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
-                object_image=armor_tile,
-                object_cave=cave,
-                nombre="armor",
-                valor=1))
+        items.append(Factory().onFactoryArmadura(screen, cave))
 
         #Make weapon item
-        items.append(Item(
-                screen,
-                posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
-                object_image=weapon_tile,
-                object_cave=cave,
-                nombre="weapon",
-                valor=1))
+        items.append(Factory().onFactoryEspada(screen, cave))
 
     #Make food item
     for i in range(4):
-        items.append(Item(
-                screen,
-                posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
-                object_image=food_tile,
-                object_cave=cave,
-                nombre="food",
-                valor=20))
+        items.append(Factory().onFactoryPocion(screen, cave))
 
     #make door
-    items.append(Item(
-            screen,
-            posicion=(random.randrange(0, MAP_WIDTH, 16), random.randrange(0, MAP_HEIGHT, 16)),
-            object_image=door_tile,
-            object_cave=cave,
-            nombre="Puerta de Madera",
-            valor=0))
+    items.append(Factory().onFactoryPuertaMadera(screen, cave))
 
     return items
 
-def make_monsters(screen, cave, MAPA_ANCHO: int, MAPA_ALTO: int, monster_tiles, dungeonLevel: int):
-    """
-    Los enemigos cambian sus estadistidas y son asesinados en cada nivel, asi que creamos nuevos enemigos cada
-    nuevo nivel que el jugador avance.
-    @param screen: La ventana de juego para dibujar.
-    @param cave: El mapa.
-    @param MAPA_ANCHO: El ancho del mapa (area jugable) en pixeles.
-    @param MAPA_ALTO: El alto del mapa (area jugable) en pixeles.
-    @param monster_tiles: Imagenes de los enemigos.
-    @param dungeonLevel: El nivel actual de la mazmorra.
-    @return: Lista con los enemigos creados.
-    """
-
-    monsters: list = []
-
-    for i in range( MONSTER_COUNT ):
-        monsters.append(Monster(
-            screen,
-            posicion = (random.randrange(0, MAPA_ANCHO, 16), random.randrange(0, MAPA_ALTO, 16)),
-            object_image = monster_tiles[random.randint(0, len(monster_tiles)-1)],
-            object_cave = cave,
-            dungeon_level = dungeonLevel))
-
-    return monsters
 
 def removeMonster(monsters):
     """Remove dead monsters from the monster list
@@ -163,16 +100,12 @@ def removeMonster(monsters):
         if m.GetVitalidad() <= 0:
             monsters.remove(m)
 
-def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon_tile, door_tile, MAP_HEIGHT, MAP_WIDTH):
+def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: int):
     """Run the game and the contains the main game loop
        @param screen: the game screen to draw
        @param cave: the map
        @param player: the player object
        @param monster_tiles: monster images
-       @param armor_tile: armor image
-       @param food_tile: potion image
-       @param weapon_tile: weapon image
-       @param door_tile: door image
        @param MAP_HEIGHT: the map heith (playable area) in pixels
        @param MAP_WIDTH: the map width (playable area) in pixels
     """
@@ -180,12 +113,12 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
     global dungeonLevel
 
     #Make list of monsters
-    monsters = make_monsters(screen, cave, MAP_WIDTH, MAP_HEIGHT, monster_tiles, dungeonLevel)
-    items = make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapon_tile, door_tile)
+    monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, dungeonLevel)
+    items = make_items(screen, cave)
 
     #get clock so we can control frames per second
     clock = pygame.time.Clock()
-    gameMessage = ""
+    gameMessage: str = ""
 
     #Main game loop - should probably be refactored (if time)
     while True:
@@ -225,8 +158,8 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
                                 player.Update(cave, (random.randrange(0, MAP_WIDTH, 16), random.randrange(0,
                                                 MAP_HEIGHT, 16)))
                                 #make new monster list
-                                monsters = make_monsters(screen, cave, MAP_WIDTH, MAP_HEIGHT, monster_tiles, dungeonLevel)
-                                items = make_items(screen, cave, MAP_WIDTH, MAP_HEIGHT, armor_tile, food_tile, weapon_tile, door_tile)
+                                monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, dungeonLevel)
+                                items = make_items(screen, cave)
                                 gameMessage = "Nuevo nivel de mazmorra! " + gameMessage
 
                             elif item.GetItemNombre() == "weapon":
@@ -277,12 +210,13 @@ def OnRunGame(screen, cave, player, monster_tiles, armor_tile, food_tile, weapon
                     monsterAttackMessage = monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAGE_BOX_HEIGHT)
 
                     if battleresult[0]:
-                        gameMessage = "Golpeas al enemigo por " + str(battleresult[1]) + "! Has matado al enemigo! " + \
+                        gameMessage = "Golpeas al enemigo por {0}! Has matado al enemigo! ".format(str(battleresult[1])) + \
                         monsterAttackMessage
                     elif battleresult[1] == 0:
-                        gameMessage = "No hay nada que golpear aqui! " + monsterAttackMessage
+                        gameMessage = "No hay nada que golpear aqui! {0}".format(monsterAttackMessage)
                     else:
-                        gameMessage = "Golpeas al enemigo por " + str(battleresult[1]) + "! " + monsterAttackMessage
+                        gameMessage = "Golpeas al enemigo por {0}! {1}".format(str(battleresult[1]), monsterAttackMessage)
+
 
                     removeMonster(monsters)
 
@@ -389,5 +323,5 @@ def OnExitApp():
     """
     Salimos de la App.
     """
-    sys.exit()
+    sys.exit(0)
 
