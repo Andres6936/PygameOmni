@@ -3,16 +3,20 @@
 import random
 
 from pygame.sprite import Sprite
+from Source.Enum.EnumConstantes import EnumConstantes
 
-""" Contantes de la Clase. """
-
-PIXELES: int = 16 #width and height of a tile
-DIRECTION: list = ['L', 'R', 'D', 'U'] #Left, right, down, up
 
 class GameObject( Sprite ):
     """
     Un clase generica que contiene los metodos de los diferentes objectos del juego.
     """
+
+    # CONSTANTES DE CLASE
+
+    PIXELES: int = EnumConstantes.PIXELES.value  # width and height of a tile
+    DIRECTION: list = ['L', 'R', 'D', 'U']  # Left, right, down, up
+
+    # CONSTRUCTOR DE LA CLASE
 
     def __init__(self, screen, posicion: tuple, object_image, object_cave):
         """ 
@@ -73,11 +77,11 @@ class GameObject( Sprite ):
         """
 
         #Is this tile a wall, True if not, False if it is a wall
-        if self.cave[ int( y/PIXELES ) ][ int( x/PIXELES ) ].IsTransitable():
+        if self.cave[ int( y/self.PIXELES ) ][ int( x/self.PIXELES ) ].isTransitable():
             return (x, y)
         else:
-            return self.legalStartPosition(random.randrange(0, len(self.cave[0])*PIXELES, PIXELES),
-                                           random.randrange(0, len(self.cave)*PIXELES, PIXELES))
+            return self.legalStartPosition(random.randrange(0, len(self.cave[0])*self.PIXELES, self.PIXELES),
+                                           random.randrange(0, len(self.cave)*self.PIXELES, self.PIXELES))
 
 class MovableCharacter( GameObject ):
     """Class for movable objects"""
@@ -132,7 +136,8 @@ class MovableCharacter( GameObject ):
         self.defensa += cantidad
 
     def increaseAP(self, amount):
-        """Increase attack power with value of amount
+        """
+        Increase attack power with value of amount
         """
         self.attackPower += amount
 
@@ -159,7 +164,7 @@ class MovableCharacter( GameObject ):
         if player is not None and ((player.getXposition() == x) and player.getYposition() == y):
             return False
 
-        return self.cave[int(y / PIXELES)][int(x / PIXELES)].IsTransitable()
+        return self.cave[int(y / self.PIXELES)][int(x / self.PIXELES)].isTransitable()
 
 class Monster( MovableCharacter ):
     """A class for monsters/enemies"""
@@ -170,7 +175,7 @@ class Monster( MovableCharacter ):
         """
         super(Monster, self).__init__(screen, posicion, object_image, object_cave, dungeon_level)
 
-        self.direction = DIRECTION[random.randint(0, len(DIRECTION)-1)]
+        self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
         self.vitalidad = 25 + (dungeon_level * 4) # Vitalidad.
         self.defensa = 2 + (dungeon_level * 2)    # Defensa reduce el daño recibido.
         self.attackPower = 6 + (dungeon_level*2)  #Attackpower increases damage done
@@ -179,28 +184,28 @@ class Monster( MovableCharacter ):
         """Move a monster in a random direction, if it hit a wall or another monster, we choose a new random direction
         """
         if self.direction == 'L':
-            if self.checkValidMove(self.getYposition(), (self.getXposition()-PIXELES), monsterList, player):
-                self.Mover(-PIXELES, 0)
+            if self.checkValidMove(self.getYposition(), (self.getXposition()-self.PIXELES), monsterList, player):
+                self.Mover(-self.PIXELES, 0)
             else:
-                self.direction = DIRECTION[random.randint(0, len(DIRECTION)-1)]
+                self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'R':
-            if self.checkValidMove(self.getYposition(), (self.getXposition()+PIXELES), monsterList, player):
-                self.Mover(PIXELES, 0)
+            if self.checkValidMove(self.getYposition(), (self.getXposition()+self.PIXELES), monsterList, player):
+                self.Mover(self.PIXELES, 0)
             else:
-                self.direction = DIRECTION[random.randint(0, len(DIRECTION)-1)]
+                self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'U':
-            if self.checkValidMove((self.getYposition()-PIXELES), self.getXposition(), monsterList, player):
-                self.Mover(0, -PIXELES)
+            if self.checkValidMove((self.getYposition()-self.PIXELES), self.getXposition(), monsterList, player):
+                self.Mover(0, -self.PIXELES)
             else:
-                self.direction = DIRECTION[random.randint(0, len(DIRECTION)-1)]
+                self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'D':
-            if self.checkValidMove((self.getYposition()+PIXELES), self.getXposition(), monsterList, player):
-                self.Mover(0, PIXELES)
+            if self.checkValidMove((self.getYposition()+self.PIXELES), self.getXposition(), monsterList, player):
+                self.Mover(0, self.PIXELES)
             else:
-                self.direction = DIRECTION[random.randint(0, len(DIRECTION)-1)]
+                self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
 
     def findPlayer(self, player, monsterList):
@@ -210,24 +215,24 @@ class Monster( MovableCharacter ):
         """
 
         #Find out how far the player is
-        costFromMonsterToPlayer = (abs((self.getXposition() / PIXELES) - (player.getXposition() / PIXELES)) + abs((self.getYposition() / PIXELES) - (player.getYposition() / PIXELES)))
+        costFromMonsterToPlayer = (abs((self.getXposition() / self.PIXELES) - (player.getXposition() / self.PIXELES)) + abs((self.getYposition() / self.PIXELES) - (player.getYposition() / self.PIXELES)))
 
         #Move towards the player if the player is in rage
         if costFromMonsterToPlayer <= 5:
 
             #Are the player to the left or to the rigt of the monster
             if self.getXposition() > player.getXposition():
-                dirX = -PIXELES
+                dirX = -self.PIXELES
             elif self.getXposition() < player.getXposition():
-                dirX = PIXELES
+                dirX = self.PIXELES
             else:
                 dirX = 0
 
             #Are the player to the left  or to the rigt of the monster
             if self.getYposition() > player.getYposition():
-                dirY = -PIXELES
+                dirY = -self.PIXELES
             elif self.getYposition() < player.getYposition():
-                dirY = PIXELES
+                dirY = self.PIXELES
             else:
                 dirY = 0
 
