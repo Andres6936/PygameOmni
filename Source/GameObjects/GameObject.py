@@ -12,85 +12,91 @@ class GameObject( Sprite ):
     """
 
     # CONSTANTES DE CLASE
-
     PIXELES: int = EnumConstantes.PIXELES.value  # width and height of a tile
     DIRECTION: list = ['L', 'R', 'D', 'U']  # Left, right, down, up
 
     # CONSTRUCTOR DE LA CLASE
-
-    def __init__(self, screen, posicion: tuple, object_image, object_cave):
+    def __init__(self, screen: object, coordenada: tuple, imagen: object, mapa: object):
         """ 
         Constructor
         @param screen: the screen to draw on
-        @param posicion: La posicion del objecto representado por una tupla de dos valores (x, y).
-        @param object_image: La imagen del objecto.
-        @param object_cave: El mapa.
+        @param coordenada: La posicion del objecto representado por una tupla de dos valores (x, y).
+        @param imagen: La imagen del objecto.
+        @param mapa: El mapa.
         """
         self.screen = screen
-        self.object_image = object_image
-        self.cave = object_cave
-        self.posicion = self.legalStartPosition(posicion[0], posicion[1])
+        self.imagen = imagen
+        self.mapa = mapa
+        self.coordenada = self.legalStartPosition(coordenada[0], coordenada[1])
 
+    # MÉTODOS
 
-    def Update(self, cave, posicion):
+    def update(self, mapa, coordenada):
         """
         Actualiza el Objecto de juego.
-        @param cave: El mapa.
-        @param posicion: Una tupla de dos valores (x, y) que contiene la nueva posicion del Objecto.
+        @param mapa: El mapa.
+        @param coordenada: Una tupla de dos valores (x, y) que contiene la nueva posicion del Objecto.
         """
-        self.cave = cave
-        self.posicion = self.legalStartPosition(posicion[0], posicion[1])
+        self.mapa = mapa
+        self.coordenada = self.legalStartPosition(coordenada[0], coordenada[1])
 
-    def Draw( self ):
+    def dibujar(self):
         """
         Metodo para el objecto en la pantalla.
         """
-        self.screen.blit(self.object_image, self.posicion)
+        self.screen.blit(self.imagen, self.coordenada)
 
-    def getXposition( self ) -> int:
+    def getCoordenadaX(self) -> int:
         """
         Metodo que devuelve la posicion en el eje x del Tile (en Pixeles).
+        @rtype: int
         @return: La coordenada x (en pixeles).
         """
-        return self.posicion[0]
+        return self.coordenada[0]
 
-    def getYposition( self ) -> int:
+    def getCoordenadaY(self) -> int:
         """
         Metodo que devuelve la posicion en el eje y del Tile (en Pixeles).
+        @rtype: int
         @return: La coordenada y (en pixeles).
         """
-        return self.posicion[1]
+        return self.coordenada[1]
 
-    def getPosition( self ):
+    def getCoordenada(self) -> tuple:
         """
         Metodo que devuelve la posicion de un objecto en una tupla de dos valores (x, y).
+        @rtype: tuple (int, int)
         @return: Tupla de dos valores (x, y) donde x representa el eje x & donde y representa el eje y. (en pixeles).
         """
-        return (self.getXposition(), self.getYposition())
+        return (self.getCoordenadaX(), self.getCoordenadaY())
 
     def legalStartPosition(self, x: int, y: int):
         """
         Revisa si la posicion pasada por parámetro es válidad para una posicion inicial.
         Funcion recursiva.
+        @param x: Coordenada en el eje X.
+        @param y: Coordenada en el eje Y.
+        @type x: int
+        @type y: int
         @return: Devuelve una tupla (x: int, y: int) cuando está es válidad como una posicion inicial.
         @return: call legalStartPosition-method again if it wasn't legal to start in that position
         """
 
         #Is this tile a wall, True if not, False if it is a wall
-        if self.cave[ int( y/self.PIXELES ) ][ int( x/self.PIXELES ) ].isTransitable():
+        if self.mapa[ int(y/self.PIXELES)][ int(x/self.PIXELES)].isTransitable():
             return (x, y)
         else:
-            return self.legalStartPosition(random.randrange(0, len(self.cave[0])*self.PIXELES, self.PIXELES),
-                                           random.randrange(0, len(self.cave)*self.PIXELES, self.PIXELES))
+            return self.legalStartPosition(random.randrange(0, len(self.mapa[0]) * self.PIXELES, self.PIXELES),
+                                           random.randrange(0, len(self.mapa) * self.PIXELES, self.PIXELES))
 
 class MovableCharacter( GameObject ):
     """Class for movable objects"""
 
-    def __init__(self, screen, posicion, object_image, object_cave, dungeon_level):
+    def __init__(self, screen, coordenada, imagen, mapa, dungeon_level):
         """Constructor
            send all parameters to super-class GameObject
         """
-        super(MovableCharacter, self).__init__(screen, posicion, object_image, object_cave)
+        super(MovableCharacter, self).__init__(screen, coordenada, imagen, mapa)
 
 
     def Mover( self, x, y ):
@@ -99,16 +105,16 @@ class MovableCharacter( GameObject ):
         @param x : Coordenada en el eje x.
         @param y : Coordenada en el eje y.
         """
-        self.posicion = ((self.getXposition() + x), (self.getYposition() + y))
+        self.coordenada = ((self.getCoordenadaX() + x), (self.getCoordenadaY() + y))
 
-    def GetVitalidad( self ):
+    def getVitalidad(self) -> int:
         """
         Metodo que devuelve la vitalidad del Jugador o Enemigo.
         @return: Valor de la vitalidad del Jugador o Enemigo.
         """
         return self.vitalidad
 
-    def GetDefensa( self ):
+    def getDefensa(self) -> int:
         """
         Metodo que devuelve la defensa del Jugador o Enemigo.
         @return: Valor de la defensa del Jugador o Enemigo.
@@ -121,14 +127,14 @@ class MovableCharacter( GameObject ):
         """
         return self.attackPower
 
-    def IncrementarVitalidad( self, cantidad ):
+    def incrementarVitalidad(self, cantidad):
         """
         Metodo que incrementa la vitalidad del Enemigo o Jugador, se suma el valor pasado por parametro.
         @param cantidad : Valor int que se suma a la vitalidad del Enemigo o Jugador.
         """
         self.vitalidad += cantidad
 
-    def IncrementarDefensa( self, cantidad ):
+    def incrementarDefensa(self, cantidad):
         """
         Metodo que incrementa la defensa del Enemigo o Jugador, se suma el valor pasado por parametro.
         @param cantidad : Valor int que se suma a la defensa del Enemigo o Jugador.
@@ -158,22 +164,23 @@ class MovableCharacter( GameObject ):
         """
 
         for m in monsterList:
-            if (m.getXposition() == x) and (m.getYposition() == y):
+            if (m.getCoordenadaX() == x) and (m.getCoordenadaY() == y):
                 return False
 
-        if player is not None and ((player.getXposition() == x) and player.getYposition() == y):
+        if player is not None and ((player.getCoordenadaX() == x) and player.getCoordenadaY() == y):
             return False
 
-        return self.cave[int(y / self.PIXELES)][int(x / self.PIXELES)].isTransitable()
+        return self.mapa[int(y / self.PIXELES)][int(x / self.PIXELES)].isTransitable()
+
 
 class Monster( MovableCharacter ):
     """A class for monsters/enemies"""
 
-    def __init__(self, screen, posicion, object_image, object_cave, dungeon_level):
+    def __init__(self, screen, coordenada, imagen, mapa, dungeon_level):
         """Constructor
            Send all parameters to super-class MovableCharacter
         """
-        super(Monster, self).__init__(screen, posicion, object_image, object_cave, dungeon_level)
+        super(Monster, self).__init__(screen, coordenada, imagen, mapa, dungeon_level)
 
         self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
         self.vitalidad = 25 + (dungeon_level * 4) # Vitalidad.
@@ -184,25 +191,25 @@ class Monster( MovableCharacter ):
         """Move a monster in a random direction, if it hit a wall or another monster, we choose a new random direction
         """
         if self.direction == 'L':
-            if self.checkValidMove(self.getYposition(), (self.getXposition()-self.PIXELES), monsterList, player):
+            if self.checkValidMove(self.getCoordenadaY(), (self.getCoordenadaX() -self.PIXELES), monsterList, player):
                 self.Mover(-self.PIXELES, 0)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'R':
-            if self.checkValidMove(self.getYposition(), (self.getXposition()+self.PIXELES), monsterList, player):
+            if self.checkValidMove(self.getCoordenadaY(), (self.getCoordenadaX() + self.PIXELES), monsterList, player):
                 self.Mover(self.PIXELES, 0)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'U':
-            if self.checkValidMove((self.getYposition()-self.PIXELES), self.getXposition(), monsterList, player):
+            if self.checkValidMove((self.getCoordenadaY() -self.PIXELES), self.getCoordenadaX(), monsterList, player):
                 self.Mover(0, -self.PIXELES)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'D':
-            if self.checkValidMove((self.getYposition()+self.PIXELES), self.getXposition(), monsterList, player):
+            if self.checkValidMove((self.getCoordenadaY() +self.PIXELES), self.getCoordenadaX(), monsterList, player):
                 self.Mover(0, self.PIXELES)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
@@ -215,32 +222,32 @@ class Monster( MovableCharacter ):
         """
 
         #Find out how far the player is
-        costFromMonsterToPlayer = (abs((self.getXposition() / self.PIXELES) - (player.getXposition() / self.PIXELES)) + abs((self.getYposition() / self.PIXELES) - (player.getYposition() / self.PIXELES)))
+        costFromMonsterToPlayer = (abs((self.getCoordenadaX() / self.PIXELES) - (player.getCoordenadaX() / self.PIXELES)) + abs((self.getCoordenadaY() / self.PIXELES) - (player.getCoordenadaY() / self.PIXELES)))
 
         #Move towards the player if the player is in rage
         if costFromMonsterToPlayer <= 5:
 
             #Are the player to the left or to the rigt of the monster
-            if self.getXposition() > player.getXposition():
+            if self.getCoordenadaX() > player.getCoordenadaX():
                 dirX = -self.PIXELES
-            elif self.getXposition() < player.getXposition():
+            elif self.getCoordenadaX() < player.getCoordenadaX():
                 dirX = self.PIXELES
             else:
                 dirX = 0
 
             #Are the player to the left  or to the rigt of the monster
-            if self.getYposition() > player.getYposition():
+            if self.getCoordenadaY() > player.getCoordenadaY():
                 dirY = -self.PIXELES
-            elif self.getYposition() < player.getYposition():
+            elif self.getCoordenadaY() < player.getCoordenadaY():
                 dirY = self.PIXELES
             else:
                 dirY = 0
 
             #Can we move to the new position?
-            if self.checkValidMove(self.getYposition(), self.getXposition() + dirX, monsterList, player):
+            if self.checkValidMove(self.getCoordenadaY(), self.getCoordenadaX() + dirX, monsterList, player):
                     self.Mover(dirX, 0)
                     return 1
-            elif self.checkValidMove(self.getYposition() + dirY, self.getXposition(), monsterList, player):
+            elif self.checkValidMove(self.getCoordenadaY() + dirY, self.getCoordenadaX(), monsterList, player):
                     self.Mover(0, dirY)
                     return 1
         else:
