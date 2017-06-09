@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
-"""roguelike cave generator using cellular automata.
-   Based on the algorithm in the article found here:
-   http://roguebasin.roguelikedevelopment.org/index.php/Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels 
+
+"""
+Roguelike cave generator using cellular automata.
+Based on the algorithm in the article found here:
+http://roguebasin.roguelikedevelopment.org/index.php/Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
 """
 
 import pygame
 import random
+
+from Source.GameMundo.Tile import Tile
+from Source.Enum.EnumConstantes import EnumConstantes
+
+PIXELES: int = EnumConstantes.PIXELES.value
 
 # Constants for the cave map generator
 # These settings can be changed to generate different kinds of maps.
@@ -16,62 +23,8 @@ WALLFACTOR = 5  # CA rule one
 WALLFACTOR2 = 0  # CA rule two
 FILLFACTOR = 40  # 45% of the tiles will initially be ground tiles
 
-WALL_TILE = 'Graficas/Ikoner/Items/Tiles/wall_16.png'
-GROUND_TILE = 'Graficas/Ikoner/Items/Tiles/ground3_16.png'
-
-
-class Tile:
-    """This class is for wall and ground tile objects"""
-
-    def __init__(self, transitable, digable, position, screen, tile_image):
-        """Constructor
-        @param transitable: true if tile is passable, false if not
-        @param digable: true if tile is digable, false if not
-        @param position: tuple representing this tiles position in pixels
-        @param screen: the screen to draw on
-        @param tile_image: the tile image
-        """
-        self.transitable = transitable
-        self.digable = digable
-        self.position = position
-        self.screen = screen
-        self.tile_image = tile_image
-
-    def Draw(self):
-        """Draw the tile image on the screen"""
-        self.screen.blit(self.tile_image, self.position)
-
-    def isTransitable(self):
-        """Check if this tile is passable or not
-           @return: true if this tile is passable, false if not
-        """
-        return self.transitable
-
-    def isDigable(self):
-        """Check if this tile is digable
-           @return: true if this tile is digable, false if not
-        """
-        return self.digable
-
-    def updateTile(self, passable, tile):
-        """Update the tile
-           @param passable: new passable value
-           @param tile: new tile image
-        """
-        self.transitable = passable
-        self.tile_image = tile
-
-    def getXposition(self):
-        """Get the tiles x-cord
-           @return: x-cord of tile
-        """
-        return self.position[0]
-
-    def getYposition(self):
-        """Get the tiles y-cord
-           @return: y-cord of tile
-        """
-        return self.position[1]
+WALL_TILE = 'Graficas/Ikoner/Tiles/Muros/wall_16.png'
+GROUND_TILE = 'Graficas/Ikoner/Tiles/Suelos/ground3_16.png'
 
 
 def calculateNearbyWalls(tile, cave):
@@ -89,13 +42,13 @@ def calculateNearbyWalls(tile, cave):
             # skip self
             if y == 0 and y == x:
                 continue
-            if not cave[int(tile.getYposition() / 16) + y][int(tile.getXposition() / 16) + x].isTransitable():
+            if not cave[int(tile.getCoordenadaY() / 16) + y][int(tile.getCoordenadaX() / 16) + x].isTransitable():
                 numwalls += 1
 
     return numwalls
 
 
-def generate(xCord, yCord, wall_image, ground_image, screen):
+def generate(MAPA_ANCHO: int, MAPA_ALTO: int, wall_image, ground_image, screen):
     """Generate the cave using cellular automata. The rules are as follows:
        If a tile has at least WALLFACTOR adjacent walls, make it a wall.
        If a tile has WALLFACTOR2 adjacent wall tiles, make it a wall
@@ -103,8 +56,8 @@ def generate(xCord, yCord, wall_image, ground_image, screen):
        The cave generator can take a few seconds to complete, depending on map size.
        A problem with this generator is that the cave can be disconnected.
        With the current settings, most the caves generated seems ok
-       @param xCord: map width
-       @param yCord: map height
+       @param MAPA_ANCHO: map width
+       @param MAPA_ALTO: map height
        @param wall_image: image for wall tiles
        @param ground_image: image for ground tiles
        @param screen: the game screen to draw on
@@ -112,23 +65,23 @@ def generate(xCord, yCord, wall_image, ground_image, screen):
        """
 
     # The cavemap is a 2D list of tile objects
-    cave = [[None for x in range(0, xCord, 16)] for y in range(0, yCord, 16)]
+    cave = [[None for x in range(0, MAPA_ANCHO, PIXELES)] for y in range(0, MAPA_ALTO, PIXELES)]
 
     # Init cave. The cave edges are wall tiles, the rest are random
-    for y in range(0, int(yCord / 16)):
-        for x in range(0, int(xCord / 16)):
+    for y in range(0, int(MAPA_ALTO / PIXELES)):
+        for x in range(0, int(MAPA_ANCHO / PIXELES)):
             # Make walls around border
-            if x == 0 or y == 0 or y == (yCord / 16) - 1 or x == (xCord / 16) - 1:
-                cave[y][x] = Tile(transitable=False, digable=False, position=(x * 16, y * 16), screen=screen,
-                                  tile_image=wall_image)
+            if x == 0 or y == 0 or y == (MAPA_ALTO / PIXELES) - 1 or x == (MAPA_ANCHO / PIXELES) - 1:
+                cave[y][x] = Tile(transitable=False, digable=False, coordenada=(x * 16, y * 16), screen=screen,
+                                  imagen=wall_image)
             # Make ground tile
             elif random.randint(0, 100) > FILLFACTOR:
-                cave[y][x] = Tile(transitable=True, digable=True, position=(x * 16, y * 16), screen=screen,
-                                  tile_image=ground_image)
+                cave[y][x] = Tile(transitable=True, digable=True, coordenada=(x * 16, y * 16), screen=screen,
+                                  imagen=ground_image)
             # Make wall tile
             else:
-                cave[y][x] = Tile(transitable=False, digable=True, position=(x * 16, y * 16), screen=screen,
-                                  tile_image=wall_image)
+                cave[y][x] = Tile(transitable=False, digable=True, coordenada=(x * 16, y * 16), screen=screen,
+                                  imagen=wall_image)
 
     # Iteratively build the cave
     for iteration in range(ITERATIONS):
@@ -137,11 +90,11 @@ def generate(xCord, yCord, wall_image, ground_image, screen):
         tilesToWall = []
         tilesToGround = []
 
-        for y in range(0, int(yCord / 16)):
-            for x in range(0, int(xCord / 16)):
+        for y in range(0, int(MAPA_ALTO / 16)):
+            for x in range(0, int(MAPA_ANCHO / 16)):
 
                 # Dont do anything to border walls
-                if x == 0 or y == 0 or y == (yCord / 16) - 1 or x == (xCord / 16) - 1:
+                if x == 0 or y == 0 or y == (MAPA_ALTO / 16) - 1 or x == (MAPA_ANCHO / 16) - 1:
                     continue
 
                 # Calculate number of adjacent wall tiles
@@ -160,10 +113,10 @@ def generate(xCord, yCord, wall_image, ground_image, screen):
     return cave
 
 
-def run_mapgen(MAP_WIDTH, MAP_HEIGHT, screen):
+def run_mapgen(MAPA_ANCHO: int, MAPA_ALTO: int, screen):
     """Load map tiles, make a call to generate and return the cave represented by a 2D list of Tile objects
-       @param MAP_WIDTH: the map width in pixels
-       @param MAP_HEIGHT: the map height in pixels
+       @param MAPA_ANCHO: the map width in pixels
+       @param MAPA_ALTO: the map height in pixels
        @return the generated cave
     """
 
@@ -171,7 +124,7 @@ def run_mapgen(MAP_WIDTH, MAP_HEIGHT, screen):
     ground_image = pygame.image.load(GROUND_TILE).convert_alpha()
 
     # This can take a couple of seconds to make
-    return generate(MAP_WIDTH, MAP_HEIGHT, wall_image, ground_image, screen)
+    return generate(MAPA_ANCHO, MAPA_ALTO, wall_image, ground_image, screen)
 
 
 def updateCave(screen, cave, direction, xpos, ypos):
