@@ -8,31 +8,33 @@ class Item( GameObject ):
     Clase para los Items.
     """
 
-    def __init__(self, screen, posicion, object_image, object_cave, nombre, valor):
+    def __init__(self, screen, coordenada, imagen, mapa, nombre, bonus):
         """
         Constructor
         Send all parameter except name and value to super-class GameObject
         """
-        super(Item, self).__init__(screen, posicion, object_image, object_cave)
+        super(Item, self).__init__(screen, coordenada, imagen, mapa)
 
         self.itemNombre = nombre
-        self.itemValor = valor
+        self.itemBonus = bonus
 
-    def getPosition(self):
-        """Get the position in tuple
-           @return: tuple of x and y coordinate (in pixels)
+    def getCoordenada(self):
         """
-        return (self.getXposition(), self.getYposition())
-
-    def UsarItem(self):
-        """If a item is picked up
-           @return: The value of that item
+        Get the position in tuple
+        @return: tuple of x and y coordinate (in pixels)
         """
-        return self.itemValor
+        return (self.getCoordenadaX(), self.getCoordenadaY())
 
-    def GetItemNombre(self):
+    def getNombre(self):
         """
         Metodo que devuelve el nombre del Item.
         @return: Nombre del Item.
         """
         return self.itemNombre
+
+    def usarBonusItem(self):
+        """
+        Si el Item es recogido.
+        @return: El valor de bonus del Item.
+        """
+        return self.itemBonus
