@@ -12,7 +12,7 @@ import pygame
 
 from Source.Enum.EnumImage import EnumImage
 from Source.GameScreen import Gamescreen
-from Source.GameSystemBatalla import BattleCalc
+from Source.GameSystemBatalla import SystemBattle
 from Source.GameMundo import MapGene
 from Source.GameMundo.MapFactory import Factory
 
@@ -20,8 +20,8 @@ from Source.GameMundo.MapFactory import Factory
 
 MONSTER_COUNT:      int = 15
 STATS_BOX_WIDTH:    int = 200
-MESSAGE_BOX_HEIGHT: int = 64
 STATS_BOX_OFFSET:   int = 10
+MESSAGE_BOX_HEIGHT: int = 64
 
 # ATRIBUTOS DE LA APP
 
@@ -66,55 +66,37 @@ def OnInitGame( MAP_WIDTH: int, MAP_HEIGHT: int ):
     #Run game
     OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT, MAP_WIDTH)
 
-def make_items(screen, cave):
-    """Creates the different items and put them in a list
-       @param screen: the game screen to draw
-       @param cave: the map
-       @return: list of items
-    """
-    items = []
-
-    for i in range(3):
-        #Make armor item
-        items.append(Factory().onFactoryArmadura(screen, cave))
-
-        #Make weapon item
-        items.append(Factory().onFactoryEspada(screen, cave))
-
-    #Make food item
-    for i in range(4):
-        items.append(Factory().onFactoryPocion(screen, cave))
-
-    #make door
-    items.append(Factory().onFactoryPuertaMadera(screen, cave))
-
-    return items
-
-
 def removeMonster(monsters):
     """Remove dead monsters from the monster list
        @param monsters: list of monsters
     """
 
     for m in monsters:
-        if m.GetVitalidad() <= 0:
+        if m.getVitalidad() <= 0:
             monsters.remove(m)
 
-def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: int):
-    """Run the game and the contains the main game loop
-       @param screen: the game screen to draw
-       @param cave: the map
-       @param player: the player object
-       @param monster_tiles: monster images
-       @param MAP_HEIGHT: the map heith (playable area) in pixels
-       @param MAP_WIDTH: the map width (playable area) in pixels
+def OnRunGame(screen: object, cave: object, player: object, monster_tiles: list, MAPA_ALTO: int, MAPA_ANCHO: int):
+    """
+    Run the game and the contains the main game loop
+    @param screen: the game screen to draw
+    @type screen: object
+    @param cave: the map
+    @type cave: object
+    @param player: the player object
+    @type player: object
+    @param monster_tiles: monster images
+    @type monster_tiles: list
+    @param MAPA_ALTO: the map heith (playable area) in pixels
+    @type MAPA_ALTO: int
+    @param MAPA_ANCHO: the map width (playable area) in pixels
+    @type MAPA_ANCHO: int
     """
 
     global dungeonLevel
 
     #Make list of monsters
     monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, dungeonLevel)
-    items = make_items(screen, cave)
+    items = Factory().OnFactoryItems(screen, cave)
 
     #get clock so we can control frames per second
     clock = pygame.time.Clock()
@@ -141,42 +123,42 @@ def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: i
                     event.key == pygame.K_LEFT or \
                     event.key == pygame.K_RIGHT:
                         player.handleKey(event, monsters)
-                        gameMessage = monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAGE_BOX_HEIGHT)
+                        gameMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
 
                 elif event.key == pygame.K_s:
                     #Use item
-                    gameMessage = monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAGE_BOX_HEIGHT)
+                    gameMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
 
                     for item in items:
-                        if item.getPosition() == player.getPosition():
-                            if item.GetItemNombre() == "Puerta de Madera":
+                        if item.getCoordenada() == player.getCoordenada():
+                            if item.getNombre() == "Puerta de Madera":
                                 #Increase dungeonlevel
                                 dungeonLevel += 1
                                 #make new cave
-                                cave = MapGene.run_mapgen(MAP_WIDTH, MAP_HEIGHT, screen)
+                                cave = MapGene.run_mapgen(MAPA_ANCHO, MAPA_ALTO, screen)
                                 #update player object
-                                player.Update(cave, (random.randrange(0, MAP_WIDTH, 16), random.randrange(0,
-                                                MAP_HEIGHT, 16)))
+                                player.update(cave, (random.randrange(0, MAPA_ANCHO, 16), random.randrange(0,
+                                                                                                           MAPA_ALTO, 16)))
                                 #make new monster list
                                 monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, dungeonLevel)
-                                items = make_items(screen, cave)
+                                items = Factory().OnFactoryItems(screen, cave)
                                 gameMessage = "Nuevo nivel de mazmorra! " + gameMessage
 
-                            elif item.GetItemNombre() == "weapon":
-                                player.increaseAP(item.UsarItem())
-                                gameMessage = "Has recogido una espada! Tu poder de ataque se incrementa en " + str(item.UsarItem()) \
+                            elif item.getNombre() == "weapon":
+                                player.increaseAP(item.usarBonusItem())
+                                gameMessage = "Has recogido una espada! Tu poder de ataque se incrementa en " + str(item.usarBonusItem()) \
                                                + "! " + gameMessage
                                 items.remove(item)
 
-                            elif item.GetItemNombre() == "armor":
-                                player.IncrementarDefensa(item.UsarItem())
-                                gameMessage = "Has recogido una pieza de armadura! Tu armadura se incrementa en " + str(item.UsarItem()) \
+                            elif item.getNombre() == "armor":
+                                player.incrementarDefensa(item.usarBonusItem())
+                                gameMessage = "Has recogido una pieza de armadura! Tu armadura se incrementa en " + str(item.usarBonusItem()) \
                                                + "! " + gameMessage
                                 items.remove(item)
 
-                            elif item.GetItemNombre() == "food":
-                                player.IncrementarVitalidad(item.UsarItem())
-                                gameMessage = "Has recogido una pocion! Hit points increased by " + str(item.UsarItem()) \
+                            elif item.getNombre() == "food":
+                                player.incrementarVitalidad(item.usarBonusItem())
+                                gameMessage = "Has recogido una pocion! Hit points increased by " + str(item.usarBonusItem()) \
                                                + "! " + gameMessage
 
                                 items.remove(item)
@@ -187,7 +169,7 @@ def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: i
 
                     attackDir = 'D' #DEFAULT DIRECTION
 
-                    Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "Donde quieres atacar?")
+                    Gamescreen.OnMessageBox(screen, MAPA_ALTO, MESSAGE_BOX_HEIGHT, MAPA_ANCHO, "Donde quieres atacar?")
                     pygame.display.flip()
                     pygame.event.set_blocked(pygame.KEYUP)      #Block KEYUP so its not added to the event queue
                     attackWhere = pygame.event.wait()           #Wait for an event
@@ -206,8 +188,8 @@ def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: i
                         attackDir = 'R'
 
                     #calculate battle outcome
-                    battleresult = BattleCalc.playerAttack(monsters, player, attackDir)
-                    monsterAttackMessage = monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAGE_BOX_HEIGHT)
+                    battleresult = SystemBattle.playerAttack(monsters, player, attackDir)
+                    monsterAttackMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
 
                     if battleresult[0]:
                         gameMessage = "Golpeas al enemigo por {0}! Has matado al enemigo! ".format(str(battleresult[1])) + \
@@ -223,7 +205,7 @@ def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: i
                 #Dig down wall(D key pressed)
                 elif event.key == pygame.K_d:
 
-                    Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, "Donde quieres cavar?")
+                    Gamescreen.OnMessageBox(screen, MAPA_ALTO, MESSAGE_BOX_HEIGHT, MAPA_ANCHO, "Donde quieres cavar?")
                     pygame.display.flip()
 
                     pygame.event.set_blocked(pygame.KEYUP) #Block KEYUP so its not added to the event queue
@@ -231,44 +213,44 @@ def OnRunGame(screen, cave, player, monster_tiles, MAP_HEIGHT: int, MAP_WIDTH: i
 
                     try:
                         if digWhere.key == pygame.K_DOWN:
-                            MapGene.updateCave(screen, cave, 'D', player.getXposition(), player.getYposition())
+                            MapGene.updateCave(screen, cave, 'D', player.getCoordenadaX(), player.getCoordenadaY())
                             gameMessage = "You dig down"
 
                         elif digWhere.key == pygame.K_UP:
-                            MapGene.updateCave(screen, cave, 'U', player.getXposition(), player.getYposition())
+                            MapGene.updateCave(screen, cave, 'U', player.getCoordenadaX(), player.getCoordenadaY())
                             gameMessage = "You dig up"
 
                         elif digWhere.key == pygame.K_LEFT:
-                            MapGene.updateCave(screen, cave, 'L', player.getXposition(), player.getYposition())
+                            MapGene.updateCave(screen, cave, 'L', player.getCoordenadaX(), player.getCoordenadaY())
                             gameMessage = "You dig left"
 
                         elif digWhere.key == pygame.K_RIGHT:
-                            MapGene.updateCave(screen, cave, 'R', player.getXposition(), player.getYposition())
+                            MapGene.updateCave(screen, cave, 'R', player.getCoordenadaX(), player.getCoordenadaY())
                             gameMessage = "You dig right"
 
-                        gameMessage = monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAGE_BOX_HEIGHT)
+                        gameMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
                     except:
                         print ("DEBUG: Event bugged out")
 
                 break #only one event is handled at a time, so break out of the event loop after one event is finished
 
         #Divide by 16 to get correct tile index
-        for y in range(0, int(MAP_HEIGHT / 16)):
-            for x in range(0, int(MAP_WIDTH / 16)):
-                cave[y][x].Draw()
+        for y in range(0, int(MAPA_ALTO / 16)):
+            for x in range(0, int(MAPA_ANCHO / 16)):
+                cave[y][x].dibujar()
 
         #draw player, monsters and items
-        player.Draw()
+        player.dibujar()
 
         for m in monsters:
-            m.Draw()
+            m.dibujar()
 
         for i in items:
-            i.Draw()
+            i.dibujar()
 
         #Make stats box and display it
-        Gamescreen.OnInitStatBox(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
-        Gamescreen.OnMessageBox(screen, MAP_HEIGHT, MESSAGE_BOX_HEIGHT, MAP_WIDTH, gameMessage)
+        Gamescreen.OnInitStatBox(screen, player, dungeonLevel, MAPA_ANCHO, MAPA_ALTO, STATS_BOX_WIDTH)
+        Gamescreen.OnMessageBox(screen, MAPA_ALTO, MESSAGE_BOX_HEIGHT, MAPA_ANCHO, gameMessage)
 
         #Display
         pygame.display.flip()
@@ -294,7 +276,7 @@ def monsterMoveAndAttack(monsters, player, screen, MAP_HEIGHT, MAP_WIDTH, MESSAG
             m.walk(monsters, player)
 
     #Monster attack!
-    monsterAttackResult = BattleCalc.monsterAttack(monsters, player)
+    monsterAttackResult = SystemBattle.monsterAttack(monsters, player)
 
     #player died
     if monsterAttackResult[0]:
