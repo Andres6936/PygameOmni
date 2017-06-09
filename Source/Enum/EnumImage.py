@@ -13,7 +13,6 @@ class EnumImage( Enum ):
     """
 
     # ENEMIGOS
-
     CUCARACHA_GIGANTE = "Graficas/Ikoner/Enemigos/giant_cockroach.png"
     GUSANO_CEREBRO = "Graficas/Ikoner/Enemigos/brain_worm.png"
     DRAGON_ROJO = "Graficas/Ikoner/Enemigos/red_dragon.png"
@@ -21,12 +20,14 @@ class EnumImage( Enum ):
     MUMMY = "Graficas/Ikoner/Enemigos/mummy.png"
 
     # JUGADOR
-
     JUGADOR = "Graficas/Ikoner/Player/player.png"
 
     # OBJECTOS
-
-    PUERTA_MADERA = "Graficas/Ikoner/Items/Tiles/wooden_door.png"
     ARMADURA = "Graficas/Ikoner/Items/Armaduras/armor.png"
     POCION = "Graficas/Ikoner/Items/Pociones/potion.png"
     ESPADA = "Graficas/Ikoner/Items/Armas/sword.png"
+
+    # TILES
+    PUERTA_MADERA = "Graficas/Ikoner/Tiles/wooden_door.png"
+    MURO_LADRILLO_NEGRO = "Graficas/Ikoner/Tiles/Muros/wall_16.png"
+    SUELO_FERTIL = "Graficas/Ikoner/Tiles/Suelos/ground3_16.png"
