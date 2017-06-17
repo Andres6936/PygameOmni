@@ -6,9 +6,11 @@ import pygame
 
 from Source.GameObjects.Player import Player
 from Source.GameObjects.Item import Item
-from Source.GameObjects.GameObject import Monster
+from Source.GameObjects.Monster import Monster
+from Source.Enum.Tag import Tag
 from Source.Enum.EnumImage import EnumImage
-from Source.Enum.EnumConstantes import EnumConstantes
+from Source.Enum.Constantes import Constantes
+from Source.Core.Punto import Punto
 
 class Factory:
     """
@@ -17,25 +19,20 @@ class Factory:
 
     # ATRIBUTOS
 
-    PIXELES: int = EnumConstantes.PIXELES.value
+    PIXELES: int = Constantes.PIXELES.value
     """
     Obtenemos el valor de la constante PIXELES.
     """
 
-    MAPA_ANCHO: int = EnumConstantes.MAPA_ANCHO.value
+    MAPA_ANCHO: int = Constantes.SCREEN_ANCHO.value
     """
     Ancho total del mapa en pixeles.
     """
 
-    MAPA_ALTO: int = EnumConstantes.MAPA_ALTO.value
+    MAPA_ALTO: int = Constantes.SCREEN_ALTO.value
     """
     Alto total del mapa en pixeles.
     """
-
-    # CONSTRUCTOR
-
-    def __init__(self):
-        pass
 
     # MÉTODO
 
@@ -52,12 +49,12 @@ class Factory:
 
         monsters: list = []
 
-        MAX_ENEMIGOS_NIVEL: int = EnumConstantes.MAXIMO_ENEMIGOS_NIVEL.value
+        MAX_ENEMIGOS_NIVEL: int = Constantes.MAXIMO_ENEMIGOS_NIVEL.value
 
         for i in range( MAX_ENEMIGOS_NIVEL ):
             monsters.append(Monster(
                 screen,
-                coordenada= (random.randrange(0, self.MAPA_ANCHO, self.PIXELES), random.randrange(0, self.MAPA_ALTO, self.PIXELES)),
+                coordenada= Punto(random.randrange(0, self.MAPA_ANCHO, self.PIXELES), random.randrange(0, self.MAPA_ALTO, self.PIXELES)),
                 imagen= MONSTERS_TILES[random.randint(0, len(MONSTERS_TILES) - 1)],
                 mapa= mapa,
                 dungeon_level = dungeonLevel ))
@@ -73,9 +70,9 @@ class Factory:
         @return: Lista de items.
         """
 
-        MAX_ARMADURA_NIVEL = EnumConstantes.MAXIMO_ARMADURA_NIVEL.value
-        MAX_ESPADA_NIVEL = EnumConstantes.MAXIMO_ESPADA_NIVEL.value
-        MAX_POCION_NIVEL = EnumConstantes.MAXIMO_POCION_NIVEL.value
+        MAX_ARMADURA_NIVEL = Constantes.MAXIMO_ARMADURA_NIVEL.value
+        MAX_ESPADA_NIVEL = Constantes.MAXIMO_ESPADA_NIVEL.value
+        MAX_POCION_NIVEL = Constantes.MAXIMO_POCION_NIVEL.value
 
         items: list = []
 
@@ -102,9 +99,10 @@ class Factory:
 
         armadura = Item(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
+            tag=Tag.ARMADURA.value,
             nombre="armor",
             bonus=1
         )
@@ -121,9 +119,10 @@ class Factory:
 
         espada = Item(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
+            tag=Tag.ARMAS.value,
             nombre="weapon",
             bonus=1)
 
@@ -139,9 +138,10 @@ class Factory:
 
         pocion = Item(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
+            tag=Tag.POCION.value,
             nombre="food",
             bonus=20)
 
@@ -157,9 +157,10 @@ class Factory:
 
         puertaMadera = Item(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
+            tag=Tag.PUERTA.value,
             nombre="Puerta de Madera",
             bonus=0)
 
@@ -175,7 +176,7 @@ class Factory:
 
         ogroMago = Monster(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
             dungeon_level=dungeonLevel)
@@ -192,7 +193,7 @@ class Factory:
 
         mummy = Monster(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
             dungeon_level=dungeonLevel)
@@ -218,7 +219,7 @@ class Factory:
 
         jugador = Player(
             screen=screen,
-            coordenada=(x, y),
+            coordenada=Punto(x, y),
             imagen=imagen,
             mapa=mapa,
             dungeon_level=dungeonLevel)

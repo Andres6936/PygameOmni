@@ -28,6 +28,7 @@ class EnumImage( Enum ):
     ESPADA = "Graficas/Ikoner/Items/Armas/sword.png"
 
     # TILES
+    TILE_NEGRO = "Graficas/Ikoner/Tiles/Muros/TileNegro.png"
     PUERTA_MADERA = "Graficas/Ikoner/Tiles/wooden_door.png"
     MURO_LADRILLO_NEGRO = "Graficas/Ikoner/Tiles/Muros/wall_16.png"
     SUELO_FERTIL = "Graficas/Ikoner/Tiles/Suelos/ground3_16.png"

@@ -3,16 +3,26 @@
 
 from enum import Enum
 
-class EnumConstantes( Enum ):
+class Constantes( Enum ):
 
-    MAPA_ALTO: int = 512
+    SCREEN_ALTO: int = 512
     """
-    Alto del mapa en pixeles.
+    Alto de la ventana principal en pixeles.
     """
 
-    MAPA_ANCHO: int = 1024
+    SCREEN_ANCHO: int = 1024
     """
-    Ancho del mapa en pixeles.
+    Ancho de la ventana principal en pixeles.
+    """
+
+    MAPA_ALTO: int = 32
+    """
+    Alto del mapa de la App.
+    """
+
+    MAPA_ANCHO: int = 64
+    """
+    Ancho del mapa de la App.
     """
 
     PIXELES: int = 16
@@ -35,7 +45,7 @@ class EnumConstantes( Enum ):
     Número máximo de pociones por nivel.
     """
 
-    MAXIMO_ENEMIGOS_NIVEL: int = 15
+    MAXIMO_ENEMIGOS_NIVEL: int = 1
     """
     Máximo de enemigos que pueden haber en un nivel del mapa.
     """

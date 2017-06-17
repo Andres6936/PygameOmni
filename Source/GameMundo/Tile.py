@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # coding=utf-8
 
+from pygame import Surface
+
 class Tile:
     """
     This class is for wall and ground tile objects.
     """
 
     # CONSTRUCTOR
-    def __init__(self, transitable: bool, digable: bool, coordenada: tuple, screen, imagen):
+    def __init__(self, transitable: bool, digable: bool, coordenada: tuple, screen: Surface, imagen: object):
         """
         Constructor de la clase Tile.
         @param transitable: True si el Tile es transitable, False en caso contrario.
@@ -16,11 +18,11 @@ class Tile:
         @param screen: the screen to draw on
         @param imagen: La imagen del Tile.
         """
-        self.transitable = transitable
-        self.digable = digable
-        self.coordenada = coordenada
-        self.screen = screen
-        self.imagen = imagen
+        self.transitable: bool = transitable
+        self.digable: bool = digable
+        self.coordenada: tuple = coordenada
+        self.screen: Surface = screen
+        self.imagen: object = imagen
 
     # MÉTODOS
 
@@ -42,13 +44,14 @@ class Tile:
         """
         return self.digable
 
-    def updateTile(self, passable, tile):
-        """Update the tile
-           @param passable: new passable value
-           @param tile: new tile image
+    def actualizarTile(self, transitable: bool, nuevaImagen: object):
         """
-        self.transitable = passable
-        self.imagen = tile
+        Update the tile
+        @param transitable: new passable value
+        @param nuevaImagen: new tile image
+        """
+        self.transitable = transitable
+        self.imagen = nuevaImagen
 
     def getCoordenadaX(self) -> int:
         """Get the tiles x-cord

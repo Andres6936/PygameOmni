@@ -15,16 +15,16 @@ def playerAttack(monsters, player, direccion):
     """
 
     if direccion == 'D':
-        attackPosition = (player.getCoordenadaX(), player.getCoordenadaY() + 16)
+        attackPosition = (player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY() + 16)
     elif direccion == 'U':
-        attackPosition = (player.getCoordenadaX(), player.getCoordenadaY() - 16)
+        attackPosition = (player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY() - 16)
     elif direccion == 'L':
-        attackPosition = (player.getCoordenadaX() - 16, player.getCoordenadaY())
+        attackPosition = (player.coordenada.getCoordenadaX() - 16, player.coordenada.getCoordenadaY())
     elif direccion == 'R':
-        attackPosition = (player.getCoordenadaX() + 16, player.getCoordenadaY())
+        attackPosition = (player.coordenada.getCoordenadaX() + 16, player.coordenada.getCoordenadaY())
 
     for m in monsters:
-        if m.getCoordenada() == attackPosition:
+        if m.coordenada.getCoordenadaXY() == attackPosition:
             return calculateOutcome(m, player, monsters)
 
     #Nothing to attack
@@ -41,8 +41,8 @@ def calculateOutcome(monster, player, monsters):
     """
 
     #The damage done is the difference between the players attack power and the monsters armor
-    damageDone = player.getAttackPower() - monster.getDefensa()
-    monster.decreaseHP(damageDone)
+    damageDone = player.getAtaqueFisico() - monster.getDefensa()
+    monster.disminuirVitalidad(damageDone)
     if monster.getVitalidad() <= 0:
         monsters.remove(monster)
         return (True, damageDone) #monster died
@@ -56,7 +56,7 @@ def calculateOutcome2(player, monster):
        @return: the difference between the monsters attack power and the players armor
     """
 
-    return monster.getAttackPower() - player.getDefensa()
+    return monster.getAtaqueFisico() - player.getDefensa()
 
 
 def monsterAttack(monsters, player):
@@ -72,13 +72,13 @@ def monsterAttack(monsters, player):
     #all monsters adjacent to the player attack
     for m in monsters:
 
-        monsterPos = m.getCoordenada()
+        monsterPos = m.coordenada.getCoordenadaXY()
 
         if playerIsAdjacent(m, player):
             damageDone += calculateOutcome2(player, m)
 
     #player loses HP
-    player.decreaseHP(damageDone)
+    player.disminuirVitalidad(damageDone)
 
     return (player.getVitalidad() <= 0, damageDone)
 
@@ -89,10 +89,10 @@ def playerIsAdjacent(monster, player):
        @return True if player is adjacent, false if not
     """
 
-    if (monster.getCoordenadaX() + 16, monster.getCoordenadaY()) == player.getCoordenada() or \
-                (monster.getCoordenadaX() - 16, monster.getCoordenadaY()) == player.getCoordenada() or \
-                (monster.getCoordenadaX(), monster.getCoordenadaY() + 16) == player.getCoordenada() or \
-                (monster.getCoordenadaX(), monster.getCoordenadaY() - 16) == player.getCoordenada():
+    if (monster.coordenada.getCoordenadaX() + 16, monster.coordenada.getCoordenadaY()) == player.coordenada.getCoordenadaXY() or \
+                (monster.coordenada.getCoordenadaX() - 16, monster.coordenada.getCoordenadaY()) == player.coordenada.getCoordenadaXY() or \
+                (monster.coordenada.getCoordenadaX(), monster.coordenada.getCoordenadaY() + 16) == player.coordenada.getCoordenadaXY() or \
+                (monster.coordenada.getCoordenadaX(), monster.coordenada.getCoordenadaY() - 16) == player.coordenada.getCoordenadaXY():
         return True
     else:
          return False
