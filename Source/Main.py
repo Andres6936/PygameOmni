@@ -302,7 +302,7 @@ def monsterMoveAndAttack(monsters: list, player: Player, screen: Surface, MAP_HE
     if monsterAttackResult[0]:
 
         PanelEstadisticas().OnInitStatBox(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
-        panelMensajes.mostrarMensaje(screen, "The monster(s) around you slaughtered you for {0} HP! Tu mueres!".format(str(monsterAttackResult[1])))
+        panelMensajes.mostrarMensaje("The monster(s) around you slaughtered you for {0} HP! Tu mueres!".format(str(monsterAttackResult[1])))
         pygame.display.flip()
         OnGameOver()
     #player still alive
