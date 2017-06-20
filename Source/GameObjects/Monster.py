@@ -97,32 +97,32 @@ class Monster( GameObject ):
         if player is not None and player.coordenada.isIgual(puntoDistinto):
             return False
 
-        return self.mapa[int(puntoDistinto.getCoordenadaX() / self.PIXELES)][int(puntoDistinto.getCoordenadaY() / self.PIXELES)].isTransitable()
+        return self.mapa[puntoDistinto.getCoordenadaX()][puntoDistinto.getCoordenadaY()].isTransitable()
 
     def walk(self, monsterList: list, player: Player):
         """Move a monster in a random direction, if it hit a wall or another monster, we choose a new random direction
         """
         if self.direction == 'L':
-            if self.isMovimientoValido(Punto(self.coordenada.getCoordenadaY(), (self.coordenada.getCoordenadaX() -self.PIXELES)), monsterList, player):
-                self.mover(-self.PIXELES, 0)
+            if self.isMovimientoValido(Punto(self.coordenada.getCoordenadaY(), (self.coordenada.getCoordenadaX() - 1)), monsterList, player):
+                self.mover(-1, 0)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'R':
-            if self.isMovimientoValido(Punto(self.coordenada.getCoordenadaY(), (self.coordenada.getCoordenadaX() + self.PIXELES)), monsterList, player):
-                self.mover(self.PIXELES, 0)
+            if self.isMovimientoValido(Punto(self.coordenada.getCoordenadaY(), (self.coordenada.getCoordenadaX() + 1)), monsterList, player):
+                self.mover(1, 0)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'U':
-            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() -self.PIXELES), self.coordenada.getCoordenadaX()), monsterList, player):
-                self.mover(0, -self.PIXELES)
+            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() - 1), self.coordenada.getCoordenadaX()), monsterList, player):
+                self.mover(0, -1)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
         elif self.direction == 'D':
-            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() +self.PIXELES), self.coordenada.getCoordenadaX()), monsterList, player):
-                self.mover(0, self.PIXELES)
+            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() + 1), self.coordenada.getCoordenadaX()), monsterList, player):
+                self.mover(0, 1)
             else:
                 self.direction = self.DIRECTION[random.randint(0, len(self.DIRECTION)-1)]
 
@@ -134,24 +134,24 @@ class Monster( GameObject ):
         """
 
         #Find out how far the player is
-        costFromMonsterToPlayer = (abs((self.getCoordenadaX() / self.PIXELES) - (player.getCoordenadaX() / self.PIXELES)) + abs((self.getCoordenadaY() / self.PIXELES) - (player.getCoordenadaY() / self.PIXELES)))
+        costFromMonsterToPlayer = (abs(self.getCoordenadaX() - player.getCoordenadaX()) + abs(self.getCoordenadaY() - player.getCoordenadaY()))
 
         #Move towards the player if the player is in rage
         if costFromMonsterToPlayer <= 5:
 
             #Are the player to the left or to the rigt of the monster
             if self.getCoordenadaX() > player.getCoordenadaX():
-                dirX = -self.PIXELES
+                dirX = -1
             elif self.getCoordenadaX() < player.getCoordenadaX():
-                dirX = self.PIXELES
+                dirX = 1
             else:
                 dirX = 0
 
             #Are the player to the left  or to the rigt of the monster
             if self.getCoordenadaY() > player.getCoordenadaY():
-                dirY = -self.PIXELES
+                dirY = -1
             elif self.getCoordenadaY() < player.getCoordenadaY():
-                dirY = self.PIXELES
+                dirY = 1
             else:
                 dirY = 0
 

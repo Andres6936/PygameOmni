@@ -116,6 +116,8 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
     clock = pygame.time.Clock()
     gameMessage: str = ""
 
+    print(player.getCoordenadaX(), player.getCoordenadaY())
+
     #Main game loop - should probably be refactored (if time)
     while True:
 

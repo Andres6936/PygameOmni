@@ -101,7 +101,7 @@ class GameObject( Sprite ):
         """
         Metodo para dibujar el objecto en la pantalla.
         """
-        self.screen.blit(self.imagen, self.coordenada.getCoordenadaXY())
+        self.screen.blit(self.imagen, (self.coordenada.getCoordenadaX() * 16, self.coordenada.getCoordenadaY() * 16))
 
     def legalStartPosition(self, x: int, y: int) -> Punto:
         """
@@ -115,12 +115,14 @@ class GameObject( Sprite ):
         @rtype: tuple(int, int)
         """
 
+        print(x, y)
+
         #Is this tile a wall, True if not, False if it is a wall
-        if self.mapa[ int(y / self.PIXELES)][ int(x / self.PIXELES) ].isTransitable():
+        if self.mapa[y][x].isTransitable():
             return Punto(x, y)
         else:
             # Generamos dos números random y los pasamos por párametro.
-            x = random.randrange(0, len(self.mapa[0]) * self.PIXELES, self.PIXELES)
-            y = random.randrange(0, len(self.mapa) * self.PIXELES, self.PIXELES)
+            x = random.randrange(0, len(self.mapa[0]))
+            y = random.randrange(0, len(self.mapa))
             return self.legalStartPosition(x, y)
 

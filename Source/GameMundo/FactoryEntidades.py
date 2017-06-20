@@ -24,12 +24,12 @@ class Factory:
     Obtenemos el valor de la constante PIXELES.
     """
 
-    MAPA_ANCHO: int = Constantes.SCREEN_ANCHO.value
+    MAPA_ANCHO: int = Constantes.MAPA_ANCHO.value
     """
     Ancho total del mapa en pixeles.
     """
 
-    MAPA_ALTO: int = Constantes.SCREEN_ALTO.value
+    MAPA_ALTO: int = Constantes.MAPA_ALTO.value
     """
     Alto total del mapa en pixeles.
     """
@@ -54,7 +54,7 @@ class Factory:
         for i in range( MAX_ENEMIGOS_NIVEL ):
             monsters.append(Monster(
                 screen,
-                coordenada= Punto(random.randrange(0, self.MAPA_ANCHO, self.PIXELES), random.randrange(0, self.MAPA_ALTO, self.PIXELES)),
+                coordenada= Punto(random.randrange(0, self.MAPA_ANCHO), random.randrange(0, self.MAPA_ALTO)),
                 imagen= MONSTERS_TILES[random.randint(0, len(MONSTERS_TILES) - 1)],
                 mapa= mapa,
                 dungeon_level = dungeonLevel ))
@@ -94,8 +94,8 @@ class Factory:
         rutaImagen = EnumImage.ARMADURA.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         armadura = Item(
             screen=screen,
@@ -114,8 +114,8 @@ class Factory:
         rutaImagen = EnumImage.ESPADA.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         espada = Item(
             screen=screen,
@@ -133,8 +133,8 @@ class Factory:
         rutaImagen = EnumImage.POCION.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         pocion = Item(
             screen=screen,
@@ -152,8 +152,8 @@ class Factory:
         rutaImagen = EnumImage.PUERTA_MADERA.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         puertaMadera = Item(
             screen=screen,
@@ -171,8 +171,8 @@ class Factory:
         rutaImagen = EnumImage.OGRO_MAGO.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         ogroMago = Monster(
             screen=screen,
@@ -188,8 +188,8 @@ class Factory:
         rutaImagen = EnumImage.MUMMY.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         mummy = Monster(
             screen=screen,
@@ -214,8 +214,8 @@ class Factory:
         rutaImagen = EnumImage.JUGADOR.value
         imagen = pygame.image.load(rutaImagen).convert_alpha()
 
-        x = random.randrange(0, self.MAPA_ANCHO, self.PIXELES)
-        y = random.randrange(0, self.MAPA_ALTO, self.PIXELES)
+        x = random.randrange(0, self.MAPA_ANCHO)
+        y = random.randrange(0, self.MAPA_ALTO)
 
         jugador = Player(
             screen=screen,

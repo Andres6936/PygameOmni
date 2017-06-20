@@ -101,7 +101,7 @@ class Player( GameObject ):
         if self is not None and self.coordenada.isIgual(puntoDistinto):
             return False
 
-        return self.mapa[int(puntoDistinto.getCoordenadaX() / self.PIXELES)][int(puntoDistinto.getCoordenadaY() / self.PIXELES)].isTransitable()
+        return self.mapa[puntoDistinto.getCoordenadaX()][puntoDistinto.getCoordenadaY()].isTransitable()
 
     def handleKey(self, event, monsterList):
         """
@@ -110,17 +110,17 @@ class Player( GameObject ):
 
         # Si el jugador presiona la tecla [Izquierda]
         if event.key == pygame.K_LEFT:
-            if self.isMovimientoValido(Punto(self.getCoordenadaY(), (self.getCoordenadaX() - self.PIXELES)), monsterList):
-                self.mover(-self.PIXELES, 0)
+            if self.isMovimientoValido(Punto(self.getCoordenadaY(), (self.getCoordenadaX() - 1)), monsterList):
+                self.mover(-1, 0)
 
         elif event.key == pygame.K_RIGHT:
-            if self.isMovimientoValido(Punto(self.coordenada.getCoordenadaY(), (self.coordenada.getCoordenadaX() + self.PIXELES)), monsterList):
-                self.mover(self.PIXELES, 0)
+            if self.isMovimientoValido(Punto(self.coordenada.getCoordenadaY(), (self.coordenada.getCoordenadaX() + 1)), monsterList):
+                self.mover(1, 0)
 
         elif event.key == pygame.K_UP:
-            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() - self.PIXELES), self.coordenada.getCoordenadaX()), monsterList):
-                self.mover(0, -self.PIXELES)
+            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() - 1), self.coordenada.getCoordenadaX()), monsterList):
+                self.mover(0, -1)
 
         elif event.key == pygame.K_DOWN:
-            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() + self.PIXELES), self.coordenada.getCoordenadaX()), monsterList):
-                self.mover(0, self.PIXELES)
+            if self.isMovimientoValido(Punto((self.coordenada.getCoordenadaY() + 1), self.coordenada.getCoordenadaX()), monsterList):
+                self.mover(0, 1)
