@@ -76,7 +76,7 @@ class Punto:
         """
         return (self.getCoordenadaX(), self.getCoordenadaY())
 
-    def isIgual(self, puntoDiferente) -> bool:
+    def equals(self, puntoDiferente) -> bool:
         """
         Compara si dos Puntos son iguales.
         @param puntoDiferente: El Punto con el que se quiere comparar.

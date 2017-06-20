@@ -85,7 +85,7 @@ def removeMonster(monsters):
         if m.getVitalidad() <= 0:
             monsters.remove(m)
 
-def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list, MAPA_ALTO: int, MAPA_ANCHO: int):
+def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list, SCREEN_ALTO: int, SCREEN_ANCHO: int):
     """
     Run the game and the contains the main game loop
     @param screen: the game screen to draw
@@ -96,10 +96,10 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
     @type player: Player
     @param monster_tiles: monster images
     @type monster_tiles: list
-    @param MAPA_ALTO: the map heith (playable area) in pixels
-    @type MAPA_ALTO: int
-    @param MAPA_ANCHO: the map width (playable area) in pixels
-    @type MAPA_ANCHO: int
+    @param SCREEN_ALTO: the map heith (playable area) in pixels
+    @type SCREEN_ALTO: int
+    @param SCREEN_ANCHO: the map width (playable area) in pixels
+    @type SCREEN_ANCHO: int
     """
 
     global dungeonLevel
@@ -115,8 +115,6 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
     #get clock so we can control frames per second
     clock = pygame.time.Clock()
     gameMessage: str = ""
-
-    print(player.getCoordenadaX(), player.getCoordenadaY())
 
     #Main game loop - should probably be refactored (if time)
     while True:
@@ -135,21 +133,21 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
 
                 #move player
                 player.handleKey(event, monsters)
-                gameMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
+                gameMessage = monsterMoveAndAttack(monsters, player, screen, SCREEN_ALTO, SCREEN_ANCHO, MESSAGE_BOX_HEIGHT)
 
                 if event.key == pygame.K_s:
                     #Use item
-                    gameMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
+                    gameMessage = monsterMoveAndAttack(monsters, player, screen, SCREEN_ALTO, SCREEN_ANCHO, MESSAGE_BOX_HEIGHT)
 
                     for item in items:
-                        if item.coordenada.isIgual(player.coordenada):
+                        if item.coordenada.equals(player.coordenada):
                             if item.getTag() == Tag.PUERTA.value:
                                 #Increase dungeonlevel
                                 #make new cave
                                 dungeonLevel += 1
                                 cave = Mazmorra().InitMazmorra(screen)
                                 #update player object
-                                player.update(cave, Punto(random.randrange(0, MAPA_ANCHO, 16), random.randrange(0, MAPA_ALTO, 16)))
+                                player.update(cave, Punto(random.randrange(0, SCREEN_ANCHO / 16), random.randrange(0, SCREEN_ALTO / 16)))
                                 #make new monster list
                                 monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, dungeonLevel)
                                 items = Factory().OnFactoryItems(screen, cave)
@@ -204,7 +202,7 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
 
                     #calculate battle outcome
                     battleresult = SystemBattle.playerAttack(monsters, player, attackDir)
-                    monsterAttackMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
+                    monsterAttackMessage = monsterMoveAndAttack(monsters, player, screen, SCREEN_ALTO, SCREEN_ANCHO, MESSAGE_BOX_HEIGHT)
 
                     if battleresult[0]:
                         gameMessage = "Golpeas al enemigo por {0}! Has matado al enemigo! ".format(str(battleresult[1])) + \
@@ -251,7 +249,7 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
                             gameMessage = "You dig right"
                             panelMensajes.mostrarMensaje( gameMessage )
 
-                        gameMessage = monsterMoveAndAttack(monsters, player, screen, MAPA_ALTO, MAPA_ANCHO, MESSAGE_BOX_HEIGHT)
+                        gameMessage = monsterMoveAndAttack(monsters, player, screen, SCREEN_ALTO, SCREEN_ANCHO, MESSAGE_BOX_HEIGHT)
                     except:
                         print ("DEBUG: Event bugged out")
 
@@ -270,7 +268,7 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
             i.dibujar()
 
         #Make stats box and display it
-        PanelEstadisticas().OnInitStatBox(screen, player, dungeonLevel, MAPA_ANCHO, MAPA_ALTO, STATS_BOX_WIDTH)
+        PanelEstadisticas().OnInitStatBox(screen, player, dungeonLevel, SCREEN_ANCHO, SCREEN_ALTO, STATS_BOX_WIDTH)
 
         #Display
         pygame.display.flip()

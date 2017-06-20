@@ -11,8 +11,8 @@ class MapRender():
     """
 
     PIXELES: int = Constantes.PIXELES.value
-    MAPA_ALTO: int = Constantes.SCREEN_ALTO.value
-    MAPA_ANCHO: int = Constantes.SCREEN_ANCHO.value
+    MAPA_ALTO: int = Constantes.MAPA_ALTO.value
+    MAPA_ANCHO: int = Constantes.MAPA_ANCHO.value
 
     # CONSTRUCTOR DE CLASE
     def __init__(self):
@@ -29,6 +29,6 @@ class MapRender():
         @param mapa: El mapa a dibujar.
         @type mapa: list
         """
-        for x in range(0, int(MapRender.MAPA_ALTO / MapRender.PIXELES)):
-            for y in range(0, int(MapRender.MAPA_ANCHO / MapRender.PIXELES)):
-                mapa[x][y].dibujar()
+        for y in range(0, int(self.MAPA_ALTO)):
+            for x in range(0, int(self.MAPA_ANCHO)):
+                mapa[y][x].dibujar()

@@ -44,7 +44,7 @@ class Tile:
         """
         return self.digable
 
-    def actualizarTile(self, transitable: bool, nuevaImagen: object):
+    def actualizarTile(self, transitable: bool, nuevaImagen: object) -> None:
         """
         Update the tile
         @param transitable: new passable value

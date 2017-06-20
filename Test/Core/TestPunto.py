@@ -21,7 +21,7 @@ class TestPunto (unittest.TestCase):
 
         self.configurarEscenario1()
 
-        self.assertEqual(punto1.isIgual(punto2), True, "Error")
+        self.assertEqual(punto1.equals(punto2), True, "Error")
 
         self.resetConfiguracion()
 
@@ -32,7 +32,7 @@ class TestPunto (unittest.TestCase):
 
         self.configurarEscenario1()
 
-        self.assertEqual(punto1.isIgual(punto3), False, "Error")
+        self.assertEqual(punto1.equals(punto3), False, "Error")
 
         self.resetConfiguracion()
 

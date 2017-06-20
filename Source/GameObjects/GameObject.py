@@ -101,7 +101,7 @@ class GameObject( Sprite ):
         """
         Metodo para dibujar el objecto en la pantalla.
         """
-        self.screen.blit(self.imagen, (self.coordenada.getCoordenadaX() * 16, self.coordenada.getCoordenadaY() * 16))
+        self.screen.blit(self.imagen, (self.coordenada.getCoordenadaX() * self.PIXELES, self.coordenada.getCoordenadaY() * self.PIXELES))
 
     def legalStartPosition(self, x: int, y: int) -> Punto:
         """
@@ -114,8 +114,6 @@ class GameObject( Sprite ):
         @return: Devuelve una tupla (x: int, y: int) cuando está es válidad como una posicion inicial.
         @rtype: tuple(int, int)
         """
-
-        print(x, y)
 
         #Is this tile a wall, True if not, False if it is a wall
         if self.mapa[y][x].isTransitable():

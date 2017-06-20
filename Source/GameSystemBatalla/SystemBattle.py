@@ -15,13 +15,13 @@ def playerAttack(monsters, player, direccion):
     """
 
     if direccion == 'D':
-        attackPosition = (player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY() + 16)
+        attackPosition = (player.getCoordenadaX(), player.getCoordenadaY() + 1)
     elif direccion == 'U':
-        attackPosition = (player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY() - 16)
+        attackPosition = (player.getCoordenadaX(), player.getCoordenadaY() - 1)
     elif direccion == 'L':
-        attackPosition = (player.coordenada.getCoordenadaX() - 16, player.coordenada.getCoordenadaY())
+        attackPosition = (player.getCoordenadaX() - 1, player.getCoordenadaY())
     elif direccion == 'R':
-        attackPosition = (player.coordenada.getCoordenadaX() + 16, player.coordenada.getCoordenadaY())
+        attackPosition = (player.getCoordenadaX() + 1, player.getCoordenadaY())
 
     for m in monsters:
         if m.coordenada.getCoordenadaXY() == attackPosition:
@@ -89,10 +89,10 @@ def playerIsAdjacent(monster, player):
        @return True if player is adjacent, false if not
     """
 
-    if (monster.coordenada.getCoordenadaX() + 16, monster.coordenada.getCoordenadaY()) == player.coordenada.getCoordenadaXY() or \
-                (monster.coordenada.getCoordenadaX() - 16, monster.coordenada.getCoordenadaY()) == player.coordenada.getCoordenadaXY() or \
-                (monster.coordenada.getCoordenadaX(), monster.coordenada.getCoordenadaY() + 16) == player.coordenada.getCoordenadaXY() or \
-                (monster.coordenada.getCoordenadaX(), monster.coordenada.getCoordenadaY() - 16) == player.coordenada.getCoordenadaXY():
+    if (monster.getCoordenadaX() + 1, monster.getCoordenadaY()) == player.coordenada.getCoordenadaXY() or \
+        (monster.getCoordenadaX() - 1, monster.getCoordenadaY()) == player.coordenada.getCoordenadaXY() or \
+        (monster.getCoordenadaX(), monster.getCoordenadaY() + 1) == player.coordenada.getCoordenadaXY() or \
+        (monster.getCoordenadaX(), monster.getCoordenadaY() - 1) == player.coordenada.getCoordenadaXY():
         return True
     else:
          return False

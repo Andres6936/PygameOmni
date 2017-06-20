@@ -63,10 +63,9 @@ class Mazmorra:
         global factoryTiles
         global screen
 
+        # TODO: Implementar Screen.
         screen = None
         factoryTiles = FactoryTiles()
-
-        print("Constructor Mazmorra")
 
     # MÉTODOS
 
@@ -89,7 +88,7 @@ class Mazmorra:
         """
 
         # Matriz vacia.
-        mazmorra: list = [[None for y in range(0, self.MAPA_ANCHO)] for x in range(0, self.MAPA_ALTO)]
+        mazmorra: list = [[None for x in range(0, self.MAPA_ANCHO)] for y in range(0, self.MAPA_ALTO)]
 
         return mazmorra
 
@@ -112,17 +111,17 @@ class Mazmorra:
         mazmorra: list = self.GenerarMazmorraVacia()
 
         # Init mazmorra. The mazmorra edges are wall tiles, the rest are random
-        for x in range(0, self.MAPA_ALTO):
-            for y in range(0, self.MAPA_ANCHO):
+        for y in range(0, self.MAPA_ALTO):
+            for x in range(0, self.MAPA_ANCHO):
                 # Make walls around border
-                if y == 0 or x == 0 or x == self.MAPA_ALTO - 1 or y == self.MAPA_ANCHO - 1:
-                    mazmorra[x][y] = FactoryTiles().onFactoryMuroLadrilloNegroIndestructible(screen, x, y)
+                if x == 0 or y == 0 or y == self.MAPA_ALTO - 1 or x == self.MAPA_ANCHO - 1:
+                    mazmorra[y][x] = FactoryTiles().onFactoryMuroLadrilloNegroIndestructible(screen, y, x)
                 # Make ground tile
                 elif random.randint(0, 100) > self.FILLFACTOR:
-                    mazmorra[x][y] = FactoryTiles().onFactorySueloFertil(screen, x, y)
+                    mazmorra[y][x] = FactoryTiles().onFactorySueloFertil(screen, y, x)
                 # Make wall tile
                 else:
-                    mazmorra[x][y] = FactoryTiles().onFactoryMuroLadrilloNegro(screen, x, y)
+                    mazmorra[y][x] = FactoryTiles().onFactoryMuroLadrilloNegro(screen, y, x)
 
         # Iteratively build the mazmorra
         for iteration in range(self.ITERATIONS):
@@ -131,19 +130,19 @@ class Mazmorra:
             tilesToWall = []
             tilesToGround = []
 
-            for x in range(0, self.MAPA_ALTO):
-                for y in range(0, self.MAPA_ANCHO):
+            for y in range(0, self.MAPA_ALTO):
+                for x in range(0, self.MAPA_ANCHO):
 
                     # Dont do anything to border walls
-                    if y == 0 or x == 0 or x == self.MAPA_ALTO - 1 or y == self.MAPA_ANCHO - 1:
+                    if x == 0 or y == 0 or y == self.MAPA_ALTO - 1 or x == self.MAPA_ANCHO - 1:
                         continue
 
                     # Calculate number of adjacent wall tiles
-                    adjacentWalls = self.CalcularCercaniaConMuros(mazmorra[x][y], mazmorra)
+                    adjacentWalls = self.CalcularCercaniaConMuros(mazmorra[y][x], mazmorra)
                     if adjacentWalls >= self.WALLFACTOR or adjacentWalls == self.WALLFACTOR2:
-                        tilesToWall.append(mazmorra[x][y])
+                        tilesToWall.append(mazmorra[y][x])
                     else:
-                        tilesToGround.append(mazmorra[x][y])
+                        tilesToGround.append(mazmorra[y][x])
 
             # Update tiles
             for tile in tilesToWall:
@@ -183,14 +182,14 @@ class Mazmorra:
 
         ground_image = pygame.image.load(self.GROUND_TILE).convert_alpha()
 
-        if direction == 'D' and cave[int(ypos / 16) + 1][int(xpos / 16)].isDigable():  # Dig down
-            cave[int(ypos / 16) + 1][int(xpos / 16)].actualizarTile(True, ground_image)
+        if direction == 'D' and cave[ypos + 1][xpos].isDigable():  # Dig down
+            cave[ypos + 1][xpos].actualizarTile(True, ground_image)
 
-        elif direction == 'U' and cave[int(ypos / 16) - 1][int(xpos / 16)].isDigable():  # Dig up
-            cave[int(ypos / 16) - 1][int(xpos / 16)].actualizarTile(True, ground_image)
+        elif direction == 'U' and cave[ypos - 1][xpos].isDigable():  # Dig up
+            cave[ypos - 1][xpos].actualizarTile(True, ground_image)
 
-        elif direction == 'L' and cave[int(ypos / 16)][int(xpos / 16) - 1].isDigable():  # Dig up
-            cave[int(ypos / 16)][int(xpos / 16) - 1].actualizarTile(True, ground_image)
+        elif direction == 'L' and cave[ypos][xpos - 1].isDigable():  # Dig up
+            cave[ypos][xpos - 1].actualizarTile(True, ground_image)
 
-        elif direction == 'R' and cave[int(ypos / 16)][int(xpos / 16) + 1].isDigable():  # Dig up
-            cave[int(ypos / 16)][int(xpos / 16) + 1].actualizarTile(True, ground_image)
+        elif direction == 'R' and cave[ypos][xpos + 1].isDigable():  # Dig up
+            cave[ypos][xpos + 1].actualizarTile(True, ground_image)
