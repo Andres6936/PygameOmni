@@ -8,54 +8,77 @@ from pygame import Surface
 from pygame import font
 
 from Core.Color import Color
+from Enum.Constantes import Constantes
 from Source.GameObjects.Player import Player
 
 
-class PanelEstadisticas():
+class PanelEstadisticas:
+    """
+    Clase PanelEstadisticas.
+    """
 
-    @staticmethod
-    def OnInitStatBox(screen: Surface, player: Player, dungeon_level: int, box_x_start: int, box_heigth: int, box_width: int) -> None:
+    # CONSTANTES
+    PANEL_ESTADISTICAS_ALTO: int = Constantes.SCREEN_ALTO.value
+    """
+    Alto en pixeles del Panel Estadisticas.
+    """
+
+    PANEL_ESTADISTICAS_ANCHO: int = 200
+    """
+    Ancho en pixeles del Panel Estadisticas.
+    """
+
+    PANEL_ESTADISTICAS_COOR_X: int = Constantes.SCREEN_ANCHO.value
+    """
+    Coordenada en X del Rectángulo.
+    """
+
+    PANEL_ESTADISTICAS_COOR_Y: int = 0
+    """
+    Coordenada en Y del Rectángulo.
+    """
+
+    # ATRIBUTOS
+    screenApp = None
+    """
+    Ventana principal de la App.
+    """
+
+    fuenteTexto = None
+    """
+    Fuente del texto.
+    """
+
+    superficieRect = None
+    """
+    Superficie para dibujar texto.
+    """
+
+
+    # CONSTRUCTOR
+    def __init__(self, screen):
         """
-        Create the box displaying the stats
-        @param screen: the screen to draw on
-        @type screen: SurfaceType
-        @param player: the player object
-        @type player: Player
-        @param dungeon_level: the current dungeon level
-        @type dungeon_level: int
-        @param box_x_start: rectangle upper left corner x-coordinate
-        @type box_x_start: int
-        @param box_heigth: height of rectangle
-        @type box_heigth: int
-        @param box_width: width of rectangle
-        @type box_width: int
+        Constructor de la clase.
         """
+
+        global screenApp
+        global fuenteTexto
+        global superficieRect
+
+        # Configuramos la screen principal de la App.
+        screenApp = screen
 
         # Configuramos la fuente de texto.
-        fuente = PanelEstadisticas().configurarFuente()
+        fuenteTexto = PanelEstadisticas.configurarFuente()
 
-        #create the rectangle
-        stats_box = Rect(box_x_start, 0, box_width, box_heigth)
+        # Configuramos el Rectángulo.
+        superficieRect = PanelEstadisticas.configurarRect(self.PANEL_ESTADISTICAS_COOR_X, self.PANEL_ESTADISTICAS_COOR_Y, self.PANEL_ESTADISTICAS_ANCHO, self.PANEL_ESTADISTICAS_ALTO)
 
-        # Llamamos los métodos correspondientes para obtener la info. del Jugador.
-        vitalidad: str = PanelEstadisticas().getEstadisticaVitalidad(player)
-        ataque_fisico: str = PanelEstadisticas().getEstadisticaAtaqueFisico(player)
-        defensa: str = PanelEstadisticas().getEstadisticaDefensa(player)
+        # Rellenamos el panel con un color de fondo por defecto.
+        screenApp.fill(Color.CARBON, superficieRect)
 
-        #render game info
-        mostrar_vitalidad = fuente.render("Vitalidad: {0}".format(vitalidad), True, Color.ROJO)
-        mostrar_ataque_fisico = fuente.render("Ataque Fisico: {0}".format(ataque_fisico), True, Color.BLANCO)
-        mostrar_defensa = fuente.render("Defensa: {0}".format(defensa), True, Color.BLANCO)
-        mostrar_nivel_mazmorra = fuente.render("Nivel Mazmorra: {0}".format(str(dungeon_level)), True, Color.VERDE)
-
-        #For each line of text, draw it on the screen and move the rectangle for the next line
-        screen.fill(Color.NEGRO, stats_box)
-        screen.blit(mostrar_vitalidad, stats_box)
-        screen.blit(mostrar_ataque_fisico, stats_box.move(0, mostrar_vitalidad.get_height()))
-        screen.blit(mostrar_defensa, stats_box.move(0, mostrar_vitalidad.get_height() + mostrar_ataque_fisico.get_height()))
-        screen.blit(mostrar_nivel_mazmorra, stats_box.move(0, mostrar_vitalidad.get_height() + mostrar_ataque_fisico.get_height() + mostrar_defensa.get_height()))
-
-    def configurarFuente(self):
+    @staticmethod
+    def configurarFuente() -> font:
         """
         Configura la fuente del texto.
         @return: Fuente
@@ -63,7 +86,48 @@ class PanelEstadisticas():
         """
         return font.SysFont(name='arial', size=20)
 
-    def getEstadisticaVitalidad(self, player) -> str:
+    @staticmethod
+    def configurarRect(panelCoorX: int, panelCoorY: int, panelAncho: int, panelAlto: int) -> Rect:
+        """
+        Configura y devuelve un Rectángulo como una superficie para dibujar texto.
+        @param panelCoorX: Coordenada en X del Rectángulo.
+        @type panelCoorX: int
+        @param panelCoorY: Coordenada en Y del Rectángulo.
+        @type panelCoorY: int
+        @param panelAncho: Ancho del Rectángulo.
+        @type panelAncho: int
+        @param panelAlto: Alto del Rectángulo.
+        @type panelAlto: int
+        @return: Rectángulo que se usara como superficie para dibujar texto.
+        @rtype: RectType
+        """
+        return Rect(panelCoorX, panelCoorY, panelAncho, panelAlto)
+
+    @staticmethod
+    def mostrarEstadisticas(player: Player, nivelMazmorra: int):
+
+        global screenApp
+        global fuenteTexto
+        global superficieRect
+
+        # Llamamos los métodos correspondientes para obtener la info. del Jugador.
+        vitalidad: str = PanelEstadisticas.getEstadisticaVitalidad(player)
+        ataque_fisico: str = PanelEstadisticas.getEstadisticaAtaqueFisico(player)
+        defensa: str = PanelEstadisticas.getEstadisticaDefensa(player)
+
+        mostrar_vitalidad = fuenteTexto.render("Vitalidad: {0}".format(vitalidad), True, Color.ROJO)
+        mostrar_ataque_fisico = fuenteTexto.render("Ataque Fisico: {0}".format(ataque_fisico), True, Color.BLANCO)
+        mostrar_defensa = fuenteTexto.render("Defensa: {0}".format(defensa), True, Color.BLANCO)
+        mostrar_nivel_mazmorra = fuenteTexto.render("Nivel Mazmorra: {0}".format(str(nivelMazmorra)), True, Color.VERDE)
+
+        screenApp.fill(Color.CARBON, superficieRect)
+        screenApp.blit(mostrar_vitalidad, superficieRect)
+        screenApp.blit(mostrar_ataque_fisico, superficieRect.move(0, mostrar_vitalidad.get_height()))
+        screenApp.blit(mostrar_defensa, superficieRect.move(0, mostrar_vitalidad.get_height() + mostrar_ataque_fisico.get_height()))
+        screenApp.blit(mostrar_nivel_mazmorra, superficieRect.move(0, mostrar_vitalidad.get_height() + mostrar_ataque_fisico.get_height() + mostrar_defensa.get_height()))
+
+    @staticmethod
+    def getEstadisticaVitalidad(player) -> str:
         """
         Método que devuelve la vitalidad del Jugador.
         @param player: El Jugador.
@@ -72,7 +136,8 @@ class PanelEstadisticas():
         """
         return str(player.getVitalidad())
 
-    def getEstadisticaAtaqueFisico(self, player) -> str:
+    @staticmethod
+    def getEstadisticaAtaqueFisico(player) -> str:
         """
         Método que devuelve el ataque fisico del Jugador.
         @param player: El Jugador
@@ -81,7 +146,8 @@ class PanelEstadisticas():
         """
         return str(player.getAtaqueFisico())
 
-    def getEstadisticaDefensa(self, player) -> str:
+    @staticmethod
+    def getEstadisticaDefensa(player) -> str:
         """
         Método que devuelve la defensa del Jugador.
         @param player: El Jugador

@@ -33,8 +33,9 @@ PIXELES: int = Constantes.PIXELES.value
 # ATRIBUTOS DE LA APP
 dungeonLevel: int = 1 #dungeon level starts at 1
 
-# Iniciamos Panel Mensajes
+# Iniciamos los paneles.
 panelMensajes: PanelMensajes = None
+panelEstadisticas: PanelEstadisticas = None
 
 def OnInitGame(SCREEN_ANCHO: int, SCREEN_ALTO: int) -> None:
     """
@@ -104,9 +105,11 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
 
     global dungeonLevel
     global panelMensajes
+    global panelEstadisticas
 
-    # Inicializamos el Panel Mensajes.
+    # Inicializamos los paneles.
     panelMensajes = PanelMensajes(screen)
+    panelEstadisticas = PanelEstadisticas(screen)
 
     #Make list of monsters
     monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, dungeonLevel)
@@ -268,7 +271,7 @@ def OnRunGame(screen: Surface, cave: object, player: Player, monster_tiles: list
             i.dibujar()
 
         #Make stats box and display it
-        PanelEstadisticas().OnInitStatBox(screen, player, dungeonLevel, SCREEN_ANCHO, SCREEN_ALTO, STATS_BOX_WIDTH)
+        panelEstadisticas.mostrarEstadisticas(player, dungeonLevel)
 
         #Display
         pygame.display.flip()
@@ -286,6 +289,7 @@ def monsterMoveAndAttack(monsters: list, player: Player, screen: Surface, MAP_HE
 
     global dungeonLevel
     global panelMensajes
+    global panelEstadisticas
 
     #go through the monsters one at a time
     for m in monsters:
@@ -301,7 +305,7 @@ def monsterMoveAndAttack(monsters: list, player: Player, screen: Surface, MAP_HE
     #player died
     if monsterAttackResult[0]:
 
-        PanelEstadisticas().OnInitStatBox(screen, player, dungeonLevel, MAP_WIDTH, MAP_HEIGHT, STATS_BOX_WIDTH)
+        panelEstadisticas.mostrarEstadisticas(player, dungeonLevel)
         panelMensajes.mostrarMensaje("The monster(s) around you slaughtered you for {0} HP! Tu mueres!".format(str(monsterAttackResult[1])))
         pygame.display.flip()
         OnGameOver()

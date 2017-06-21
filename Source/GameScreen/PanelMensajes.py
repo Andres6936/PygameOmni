@@ -56,13 +56,14 @@ class PanelMensajes:
     def __init__(self, screen: Surface):
         """
         Constructor de la Clase.
-        Configuramos la fuente y la superficie.
+        Configuramos la ventana principal, fuente y la superficie.
         """
 
         global screenApp
         global fuenteTexto
         global superficieRect
 
+        # Configuramos la screen principal de la App.
         screenApp = screen
 
         # Configuramos la fuente de texto.
@@ -71,6 +72,7 @@ class PanelMensajes:
         # Configuramos el Rectángulo.
         superficieRect = PanelMensajes.configurarRect(self.PANEL_MENSAJES_COOR_X, self.PANEL_MENSAJES_COOR_Y, self.PANEL_MENSAJES_ANCHO, self.PANEL_MENSAJES_ALTO)
 
+        # Rellenamos el panel con un color de fondo por defecto.
         screenApp.fill(Color.CARBON, superficieRect)
 
     @staticmethod
@@ -102,17 +104,20 @@ class PanelMensajes:
     @staticmethod
     def mostrarMensaje(mensaje: str) -> None:
         """
-        Muestra un mensaje en una superficie.
+        Muestra el mensaje del parametro directamente en el panel.
         @param mensaje: El mensaje.
         @type mensaje: str
         """
 
         global screenApp
+        global fuenteTexto
         global superficieRect
 
-        # render message
+        # Renderizamos el mensaje.
         message = fuenteTexto.render(mensaje, True, Color.ORANGE_RED)
 
-        # display
+        # Rellenamos el panel, borrando rastros anteriores.
         screenApp.fill(Color.CARBON, superficieRect)
+
+        # Dibujamos el panel.
         screenApp.blit(message, superficieRect)
