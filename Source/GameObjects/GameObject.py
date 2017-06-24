@@ -21,6 +21,10 @@ class GameObject( Sprite ):
 
     DIRECTION: list = ['L', 'R', 'D', 'U']  # Left, right, down, up
 
+    # ATRIBUTOS DE CLASE
+
+
+
     # CONSTRUCTOR DE LA CLASE
     def __init__(self, screen: Surface, coordenada: Punto, imagen: object, mapa: object, *groups):
         """ 

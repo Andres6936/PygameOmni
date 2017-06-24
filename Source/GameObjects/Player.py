@@ -87,7 +87,7 @@ class Player( GameObject ):
         else:
             self.__vitalidad -= cantidad
 
-    def isMovimientoValido(self, puntoDistinto: Punto, monsterList: list) -> bool:
+    def isMovimientoValido(self, destino: Punto, monsterList: list) -> bool:
         """
         Método que verifica si el movimiento a realizar es válido.
         @return: True si el movimiento a realizar es válido, False en caso contrario.
@@ -95,10 +95,10 @@ class Player( GameObject ):
         """
 
         for m in monsterList:
-            if m.getCoordenadaX() is puntoDistinto.getCoordenadaX() and m.getCoordenadaY() is puntoDistinto.getCoordenadaY():
+            if m.getCoordenadaX() is destino.getCoordenadaX() and m.getCoordenadaY() is destino.getCoordenadaY():
                 return False
 
-        return self.mapa[puntoDistinto.getCoordenadaY()][puntoDistinto.getCoordenadaX()].isTransitable()
+        return self.mapa[destino.getCoordenadaY()][destino.getCoordenadaX()].isTransitable()
 
     def handleKey(self, event, monsterList):
         """
@@ -110,14 +110,17 @@ class Player( GameObject ):
             if self.isMovimientoValido(Punto(self.getCoordenadaX() - 1, (self.getCoordenadaY())), monsterList):
                 self.mover(-1, 0)
 
+        # Si el jugador presiona la tecla [Derecha]
         elif event.key == pygame.K_RIGHT:
             if self.isMovimientoValido(Punto(self.getCoordenadaX() + 1, (self.getCoordenadaY())), monsterList):
                 self.mover( 1, 0)
 
+        # Si el jugador presiona la tecla [Arriba]
         elif event.key == pygame.K_UP:
             if self.isMovimientoValido(Punto((self.getCoordenadaX()), self.getCoordenadaY() - 1), monsterList):
                 self.mover(0, -1)
 
+        # Si el jugador presiona la tecla [Abajo]
         elif event.key == pygame.K_DOWN:
             if self.isMovimientoValido(Punto((self.getCoordenadaX()), self.getCoordenadaY() + 1), monsterList):
                 self.mover(0,  1)
