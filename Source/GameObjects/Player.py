@@ -2,10 +2,11 @@
 # coding=utf-8
 
 import pygame
-
 from pygame import Surface
-from Source.Core.Punto import Punto
+
+from Core.Utilidades.Punto import Punto
 from Source.GameObjects.GameObject import GameObject
+
 
 class Player( GameObject ):
     """

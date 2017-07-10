@@ -4,10 +4,9 @@
 """
 
 from pygame import Rect
-from pygame import Surface
 from pygame import font
 
-from Core.Color import Color
+from Core.Utilidades.Color import Color
 from Enum.Constantes import Constantes
 from Source.GameObjects.Player import Player
 

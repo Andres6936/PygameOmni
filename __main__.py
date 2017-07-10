@@ -9,16 +9,22 @@
 Este archivo es el inicializador de la App.
 """
 
-from Source.Main import Main
+import pygame
+from GameScreens.GameStart import GameStart
+from GameScreens.GameMenu import GameMenu
 
 # Constants for the playable field. Must be dividable with 16 (tile size in pixels)
-MAPA_ALTURA: int = 512
-MAPA_ANCHO:  int = 1024
+SCREEN_ALTO: int = 512
+SCREEN_ANCHO:  int = 1024
 
 if __name__ == '__main__':
 
     # Creamos el objecto principal de la App.
-    App = Main()
+    App = GameStart(SCREEN_ANCHO, SCREEN_ALTO)
+
+    font = pygame.font.match_font("Ubuntu Mono")
+    Menu = GameMenu(App, "My Game", ["Jugar", "Opciones", "Salir"], fuente=font, fuente_size=40 )
+    Menu.run()
 
     # Iniciamos la App.
-    App.OnInitGame( MAPA_ANCHO, MAPA_ALTURA )
+    App.OnInitGame(SCREEN_ANCHO, SCREEN_ALTO)

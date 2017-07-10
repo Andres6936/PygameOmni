@@ -4,7 +4,8 @@ import random
 
 from pygame import Surface
 from pygame.sprite import Sprite
-from Source.Core.Punto import Punto
+
+from Core.Utilidades.Punto import Punto
 from Source.Enum.Constantes import Constantes
 
 

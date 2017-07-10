@@ -5,7 +5,7 @@ import pygame
 
 from Source.Enum.Constantes import Constantes
 
-class InterfazOmni:
+class PanelMazmorra:
     """
     Clase para renderizar el mapa de juego de la App.
     """

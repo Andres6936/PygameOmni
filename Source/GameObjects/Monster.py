@@ -4,9 +4,11 @@
 import random
 
 from pygame import Surface
-from Source.Core.Punto import Punto
+
+from Core.Utilidades.Punto import Punto
 from Source.GameObjects.GameObject import GameObject
 from Source.GameObjects.Player import Player
+
 
 class Monster( GameObject ):
     """A class for monsters/enemies"""

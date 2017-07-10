@@ -1,6 +1,6 @@
 import unittest
 
-from Source.Core.Punto import Punto
+from Core.Utilidades.Punto import Punto
 
 
 class TestPunto (unittest.TestCase):

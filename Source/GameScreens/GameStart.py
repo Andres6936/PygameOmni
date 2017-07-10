@@ -12,52 +12,71 @@ import time
 import pygame
 from pygame import Surface
 
-
-from Source.Core.Punto import Punto
+from Core.Utilidades.Punto import Punto
 from Source.Enum.Constantes import Constantes
 from Source.Enum.EnumImage import EnumImage
 from Source.Enum.Tag import Tag
 from Source.GameMundo.FactoryEntidades import Factory
 from Source.GameMundo.Mazmorra import Mazmorra
 from Source.GameObjects.Player import Player
-from Source.GamePaneles.InterfazOmni import InterfazOmni
 from Source.GamePaneles.PanelEstadisticas import PanelEstadisticas
+from Source.GamePaneles.PanelMazmorra import PanelMazmorra
 from Source.GamePaneles.PanelMensajes import PanelMensajes
 from Source.GameSystemBatalla import SystemBattle
 
-class Main:
+
+class GameStart:
 
     # CONSTANTES DE LA APP
+
     STATS_BOX_WIDTH:    int = 200
-    STATS_BOX_OFFSET:   int = 10
     MESSAGE_BOX_HEIGHT: int = 64
 
     PIXELES: int = Constantes.PIXELES.value
 
     # ATRIBUTOS DE LA APP
-    dungeonLevel: int = 1 #dungeon level starts at 1
 
     # Iniciamos la ventana principal.
     screen: Surface = None
 
     # Iniciamos los paneles y la interfaz.
-    interfazOmni: InterfazOmni = None
+    panelMazmorra: PanelMazmorra = None
     panelMensajes: PanelMensajes = None
     panelEstadisticas: PanelEstadisticas = None
 
     # Iniciamos la mazmorra.
     mazmorra: Mazmorra = None
 
-    def __init__(self):
+    # El nivel de la mazmorra empieza en 1.
+    mazmorraLevel: int = 1
+
+    def __init__(self, SCREEN_ANCHO: int, SCREEN_ALTO: int):
         """
         Constructor de la clase.
         """
 
         global screen
-        global interfazOmni
+        global panelMazmorra
         global panelMensajes
         global panelEstadisticas
         global mazmorra
+
+        # Inicializamos los modulos de Pygame.
+        pygame.init()
+
+        # Creamos la ventana principal de la App.
+        self.screen = pygame.display.set_mode((SCREEN_ANCHO + self.STATS_BOX_WIDTH, SCREEN_ALTO + self.MESSAGE_BOX_HEIGHT), 0, 32)
+
+        # Le damos un titulo a la ventana.
+        pygame.display.set_caption("Experimental 0.0.6 Estable")
+
+        # Iniciamos la mazmorra.
+        mazmorra = Mazmorra().InitMazmorra(self.screen)
+
+        # Inicializamos los paneles y la interfaz.
+        panelMazmorra = PanelMazmorra(mazmorra)
+        panelMensajes = PanelMensajes(self.screen)
+        panelEstadisticas = PanelEstadisticas(self.screen)
 
     def OnInitGame(self, SCREEN_ANCHO: int, SCREEN_ALTO: int) -> None:
         """
@@ -68,17 +87,7 @@ class Main:
         @type SCREEN_ALTO: int
         """
 
-        # Inicializamos los modulos de Pygame.
-        pygame.init()
-
-        #Get a screen object to draw on
-        #Total screen size is MAP_WIDTH + 265 (stats box) and MAP_HEIGHT + 128 (message box)
-        screen = pygame.display.set_mode((SCREEN_ANCHO + self.STATS_BOX_WIDTH, SCREEN_ALTO + self.MESSAGE_BOX_HEIGHT), 0, 32)
-
-        pygame.display.set_caption("INF3331 Roguelike Project")
-
-        # Create the first cave. This can take a couple of seconds to make
-        cave = Mazmorra().InitMazmorra(screen)
+        global mazmorra
 
         #load monster images
         monster_images = [
@@ -91,26 +100,13 @@ class Main:
 
         monster_tiles = [pygame.image.load(img).convert_alpha() for img in monster_images]
 
-        #create player object
-        player = Factory().onFactoryJugador(screen, cave, self.dungeonLevel)
-
         #Run game
-        self.OnRunGame(screen, cave, player, monster_tiles, SCREEN_ALTO, SCREEN_ANCHO)
+        self.OnRunGame(mazmorra, monster_tiles, SCREEN_ALTO, SCREEN_ANCHO)
 
-    def removeMonster(self, monsters):
-        """Remove dead monsters from the monster list
-           @param monsters: list of monsters
-        """
 
-        for m in monsters:
-            if m.getVitalidad() <= 0:
-                monsters.remove(m)
-
-    def OnRunGame(self, screen: Surface, cave: object, player: Player, monster_tiles: list, SCREEN_ALTO: int, SCREEN_ANCHO: int):
+    def OnRunGame(self, cave: object, monster_tiles: list, SCREEN_ALTO: int, SCREEN_ANCHO: int):
         """
         Run the game and the contains the main game loop
-        @param screen: the game screen to draw
-        @type screen: SurfaceType
         @param cave: the map
         @type cave: object
         @param player: the player object
@@ -123,18 +119,18 @@ class Main:
         @type SCREEN_ANCHO: int
         """
 
-        global interfazOmni
+        global screen
+        global panelMazmorra
         global panelMensajes
         global panelEstadisticas
+        global mazmorra
 
-        # Inicializamos los paneles y la interfaz.
-        interfazOmni = InterfazOmni(cave)
-        panelMensajes = PanelMensajes(screen)
-        panelEstadisticas = PanelEstadisticas(screen)
+        # create player object
+        player = Factory().onFactoryJugador(self.screen, mazmorra, self.mazmorraLevel)
 
         #Make list of monsters
-        monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, self.dungeonLevel)
-        items = Factory().OnFactoryItems(screen, cave)
+        monsters = Factory().OnFactoryMonsters(self.screen, cave, monster_tiles, self.mazmorraLevel)
+        items = Factory().OnFactoryItems(self.screen, cave)
 
         #get clock so we can control frames per second
         clock = pygame.time.Clock()
@@ -157,26 +153,26 @@ class Main:
 
                     #move player
                     player.handleKey(event, monsters)
-                    gameMessage = self.monsterMoveAndAttack(monsters, player, screen)
+                    gameMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
 
                     if event.key == pygame.K_s:
                         #Use item
-                        gameMessage = self.monsterMoveAndAttack(monsters, player, screen)
+                        gameMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
 
                         for item in items:
                             if item.coordenada.equals(player.coordenada):
                                 if item.getTag() == Tag.PUERTA.value:
                                     #Increase dungeonlevel
                                     #make new cave
-                                    self.dungeonLevel += 1
-                                    cave = Mazmorra().InitMazmorra(screen)
+                                    self.mazmorraLevel += 1
+                                    cave = Mazmorra().InitMazmorra(self.screen)
                                     # El nuevo mundo lo pasamos por parametro.
-                                    interfazOmni.setMundo(cave)
+                                    panelMazmorra.setMundo(cave)
                                     #update player object
                                     player.update(cave, Punto(random.randrange(0, SCREEN_ANCHO / 16), random.randrange(0, SCREEN_ALTO / 16)))
                                     #make new monster list
-                                    monsters = Factory().OnFactoryMonsters(screen, cave, monster_tiles, self.dungeonLevel)
-                                    items = Factory().OnFactoryItems(screen, cave)
+                                    monsters = Factory().OnFactoryMonsters(self.screen, cave, monster_tiles, self.mazmorraLevel)
+                                    items = Factory().OnFactoryItems(self.screen, cave)
                                     gameMessage = "Nuevo nivel de mazmorra! " + gameMessage
                                     panelMensajes.mostrarMensaje( gameMessage )
 
@@ -228,7 +224,7 @@ class Main:
 
                         #calculate battle outcome
                         battleresult = SystemBattle.playerAttack(monsters, player, attackDir)
-                        monsterAttackMessage = self.monsterMoveAndAttack(monsters, player, screen)
+                        monsterAttackMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
 
                         if battleresult[0]:
                             gameMessage = "Golpeas al enemigo por {0}! Has matado al enemigo! ".format(str(battleresult[1])) + \
@@ -256,33 +252,33 @@ class Main:
 
                         try:
                             if digWhere.key == pygame.K_DOWN:
-                                Mazmorra().actualizarMazmorra(screen, cave, 'D', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
+                                Mazmorra().actualizarMazmorra(self.screen, cave, 'D', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
                                 gameMessage = "You dig down"
                                 panelMensajes.mostrarMensaje( gameMessage )
 
                             elif digWhere.key == pygame.K_UP:
-                                Mazmorra().actualizarMazmorra(screen, cave, 'U', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
+                                Mazmorra().actualizarMazmorra(self.screen, cave, 'U', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
                                 gameMessage = "You dig up"
                                 panelMensajes.mostrarMensaje( gameMessage )
 
                             elif digWhere.key == pygame.K_LEFT:
-                                Mazmorra().actualizarMazmorra(screen, cave, 'L', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
+                                Mazmorra().actualizarMazmorra(self.screen, cave, 'L', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
                                 gameMessage = "You dig left"
                                 panelMensajes.mostrarMensaje( gameMessage )
 
                             elif digWhere.key == pygame.K_RIGHT:
-                                Mazmorra().actualizarMazmorra(screen, cave, 'R', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
+                                Mazmorra().actualizarMazmorra(self.screen, cave, 'R', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
                                 gameMessage = "You dig right"
                                 panelMensajes.mostrarMensaje( gameMessage )
 
-                            gameMessage = self.monsterMoveAndAttack(monsters, player, screen)
+                            gameMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
                         except:
                             print ("DEBUG: Event bugged out")
 
                     break #only one event is handled at a time, so break out of the event loop after one event is finished
 
             #Divide by 16 to get correct tile index
-            interfazOmni.dibujarMapa()
+            panelMazmorra.dibujarMapa()
 
             #draw player, monsters and items
             player.dibujar()
@@ -294,7 +290,7 @@ class Main:
                 i.dibujar()
 
             #Make stats box and display it
-            panelEstadisticas.mostrarEstadisticas(player, self.dungeonLevel)
+            panelEstadisticas.mostrarEstadisticas(player, self.mazmorraLevel)
 
             #Display
             pygame.display.flip()
@@ -324,7 +320,7 @@ class Main:
         #player died
         if monsterAttackResult[0]:
 
-            panelEstadisticas.mostrarEstadisticas(player, self.dungeonLevel)
+            panelEstadisticas.mostrarEstadisticas(player, self.mazmorraLevel)
             panelMensajes.mostrarMensaje("The monster(s) around you slaughtered you for {0} HP! Tu mueres!".format(str(monsterAttackResult[1])))
             pygame.display.flip()
             self.OnGameOver()
@@ -334,6 +330,25 @@ class Main:
                 return "El enemigo te golpea por " + str(monsterAttackResult[1]) + " HP!"
             else:
                 return ""
+
+    def removeMonster(self, monsters):
+        """Remove dead monsters from the monster list
+           @param monsters: list of monsters
+        """
+
+        for m in monsters:
+            if m.getVitalidad() <= 0:
+                monsters.remove(m)
+
+    def DibujarTexto(self, texto, size, x, y, center=True):
+        fuenteName = pygame.font.SysFont("arial", 30)
+        textoSurface = fuenteName.render(texto, True, (255, 255, 255))
+        textoRect = textoSurface.get_rect()
+        if center:
+            textoRect.midtop = (x, y)
+        else:
+            textoRect.topleft = (x, y)
+        return self.screen.blit(textoSurface, textoRect)
 
     def OnGameOver(self):
         """
@@ -347,5 +362,6 @@ class Main:
         """
         Salimos de la App.
         """
+        pygame.quit()
         sys.exit(0)
 

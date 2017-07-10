@@ -2,9 +2,11 @@
 # coding=utf-8
 
 from pygame import Surface
-from Source.GameObjects.GameObject import GameObject
+
+from Core.Utilidades.Punto import Punto
 from Source.Enum.Tag import Tag
-from Source.Core.Punto import Punto
+from Source.GameObjects.GameObject import GameObject
+
 
 class Item( GameObject ):
     """
