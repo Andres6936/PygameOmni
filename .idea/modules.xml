@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../PygameOmni/.idea/PygameOmni.iml" filepath="$PROJECT_DIR$/../PygameOmni/.idea/PygameOmni.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/PygameOmni.iml" filepath="$PROJECT_DIR$/.idea/PygameOmni.iml" />
     </modules>
   </component>
 </project>

@@ -10,8 +10,8 @@ Este archivo es el inicializador de la App.
 """
 
 import pygame
-from GameScreens.GameStart import GameStart
-from GameScreens.GameMenu import GameMenu
+from Source.GameScreens.GameStart import GameStart
+from Source.GameScreens.GameMenu import GameMenu
 
 # Constants for the playable field. Must be dividable with 16 (tile size in pixels)
 SCREEN_ALTO: int = 512

@@ -7,7 +7,7 @@ from pygame import Rect
 from pygame import font
 
 from Core.Utilidades.Color import Color
-from Enum.Constantes import Constantes
+from Source.Enum.Constantes import Constantes
 from Source.GameObjects.Player import Player
 
 
