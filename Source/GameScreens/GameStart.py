@@ -114,7 +114,7 @@ class GameStart:
     def Clear(self):
         pass
 
-    def Update(self):
+    def Draw(self):
         #get clock so we can control frames per second
         clock = pygame.time.Clock()
         clock.tick(30)  # Limit the screen to 5 FPS
@@ -137,7 +137,7 @@ class GameStart:
         # Display
         pygame.display.flip()
 
-    def Events(self):
+    def Update(self):
         global mazmorra
 
         for event in pygame.event.get():

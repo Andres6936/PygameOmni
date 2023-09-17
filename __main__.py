@@ -16,4 +16,4 @@ if __name__ == '__main__':
     while sceneManager.isRunning:
         sceneManager.Clear()
         sceneManager.Update()
-        sceneManager.Events()
+        sceneManager.Draw()
