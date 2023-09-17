@@ -9,20 +9,21 @@ import pygame
 
 from GUI.Boton import Boton
 from Source.Screens.IScreen import IScreen
+from Source.Screens.IScreenManager import IScreenManager
 from Source.Screens.NextScene import NextScene
 
 
 class ScreenMenu(IScreen):
 
-    def __init__(self, app, titulo, items, bg_color=(0, 0, 0), bg_imagen=None,
+    def __init__(self, screenManager: IScreenManager, titulo, items, bg_color=(0, 0, 0), bg_imagen=None,
                  fuente=None, fuente_size=30, color=(255, 255, 255), hcolor=(255, 0, 0),
                  padding=40):
 
-        self.app = app
+        self.screenManager: IScreenManager = screenManager
         self.bg_imagen = bg_imagen
         self.titulo = titulo
-        self.ancho = self.app.screen.get_width()
-        self.alto = self.app.screen.get_height()
+        self.ancho = self.screenManager.Surface().get_width()
+        self.alto = self.screenManager.Surface().get_height()
         self.bg_color = bg_color
         self.color = color
         self.hcolor = hcolor
@@ -48,7 +49,7 @@ class ScreenMenu(IScreen):
             textoRect.midtop = (x, y)
         else:
             textoRect.topleft = (x, y)
-        return self.screen.blit(textoSurface, textoRect)
+        return self.screenManager.Surface().blit(textoSurface, textoRect)
 
     def setMouseHover(self, item):
         # Resaltamos el item que se encuentra sobre el mouse.
@@ -110,16 +111,16 @@ class ScreenMenu(IScreen):
             self.cur_item = None
 
         pygame.mouse.set_visible(self.mouse_visible)
-        self.app.screen.fill((0, 0, 0))
+        self.screenManager.Surface().fill((0, 0, 0))
         if self.bg_imagen:
-            self.app.screen.blit(self.bg_imagen, (0, 0))
+            self.screenManager.Surface().blit(self.bg_imagen, (0, 0))
 
         if type(self.titulo) is str:
-            self.DibujarTexto(self.titulo, 40, self.app.screen.get_width() / 2, 40)
+            self.DibujarTexto(self.titulo, 40, self.screenManager.Surface().get_width() / 2, 40)
 
         for item in self.items:
             if self.mouse_visible:
                 self.setMouseHover(item)
-            self.app.screen.blit(item.label, item.posXY)
+            self.screenManager.Surface().blit(item.label, item.posXY)
         pygame.display.flip()
         return NextScene.NONE
