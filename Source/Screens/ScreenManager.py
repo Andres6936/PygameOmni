@@ -38,9 +38,7 @@ class ScreenManager(IScreenManager):
 
         # Lazy loading of screen
         self.screenInGame: IScreen | None = None
-        self.screenMenu: IScreen = ScreenMenu(
-            self,"My Game", ["Jugar", "Opciones", "Salir"],
-            fuente=font, fuente_size=40)
+        self.screenMenu: IScreen = ScreenMenu(self, fuente=font)
         # Reference the first scene in the start of app
         self.currentScene: IScreen = self.screenMenu
 

@@ -15,27 +15,27 @@ from Source.Screens.NextScene import NextScene
 
 class ScreenMenu(IScreen):
 
-    def __init__(self, screenManager: IScreenManager, titulo, items, bg_color=(0, 0, 0), bg_imagen=None,
-                 fuente=None, fuente_size=30, color=(255, 255, 255), hcolor=(255, 0, 0),
-                 padding=40):
+    def __init__(self, screenManager: IScreenManager,
+                 bg_imagen=None, fuente=None, padding=40):
 
         self.screenManager: IScreenManager = screenManager
         self.bg_imagen = bg_imagen
-        self.titulo = titulo
+        self.titulo = "My Game"
         self.ancho = self.screenManager.Surface().get_width()
         self.alto = self.screenManager.Surface().get_height()
-        self.bg_color = bg_color
-        self.color = color
-        self.hcolor = hcolor
+        self.bg_color = (0, 0, 0)
+        self.color = (255, 255, 255)
+        self.hcolor = (255, 0, 0)
         self.items = []
         self.cur_item = None
         self.mouse_visible = True
         self.padding = padding
         self.clock = pygame.time.Clock()
+        self.options = ["Jugar", "Opciones", "Salir"]
 
-        for indice, item in enumerate(items):
+        for indice, item in enumerate(self.options):
             menu_item = Boton(item, fuente, self.padding)
-            total_height = len(items) * menu_item.alto
+            total_height = len(self.options) * menu_item.alto
             posX = int(self.ancho / 2) - int(menu_item.ancho / 2)
             posY = int(self.alto / 2) - int(total_height / 2) + ((indice * 2) + indice * menu_item.alto) + 50
             menu_item.setPosicionXY(posX, posY)
