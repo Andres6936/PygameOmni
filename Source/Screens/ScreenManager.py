@@ -9,12 +9,13 @@ import pygame
 
 from Source.Enum.Constantes import Constantes
 from Source.Screens.IScreen import IScreen
+from Source.Screens.IScreenManager import IScreenManager
 from Source.Screens.NextScene import NextScene
 from Source.Screens.ScreenInGame import ScreenInGame
 from Source.Screens.ScreenMenu import ScreenMenu
 
 
-class ScreenManager:
+class ScreenManager(IScreenManager):
     STATS_BOX_WIDTH: int = 200
     MESSAGE_BOX_HEIGHT: int = 64
     PIXELES: int = Constantes.PIXELES.value

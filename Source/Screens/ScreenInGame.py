@@ -10,14 +10,15 @@ from Source.GamePaneles.PanelEstadisticas import PanelEstadisticas
 from Source.GamePaneles.PanelMazmorra import PanelMazmorra
 from Source.GamePaneles.PanelMensajes import PanelMensajes
 from Source.Screens.IScreen import IScreen
+from Source.Screens.IScreenManager import IScreenManager
 from Source.Screens.NextScene import NextScene
 from Source.GameSystemBatalla import SystemBattle
 
 
 class ScreenInGame(IScreen):
 
-    def __init__(self, sceneManager):
-        self.sceneManager = sceneManager
+    def __init__(self, sceneManager: IScreenManager):
+        self.sceneManager: IScreenManager = sceneManager
         self.screen = sceneManager.Surface()
         self.screenWidth = sceneManager.ScreenWidth()
         self.screenHeight = sceneManager.ScreenHeight()
