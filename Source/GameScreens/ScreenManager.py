@@ -5,42 +5,21 @@
    and running the game, aswell as creating different game objects.
 """
 
-import time
-
 import pygame
-from pygame import Surface
 
 from Source.Enum.Constantes import Constantes
-from Source.GameMundo.Mazmorra import Mazmorra
 from Source.GameScreens.IScreen import IScreen
 from Source.GameScreens.NextScene import NextScene
 from Source.GameScreens.ScreenInGame import ScreenInGame
 from Source.GameScreens.ScreenMenu import ScreenMenu
 
 
-class GameStart:
-    STATS_BOX_WIDTH:    int = 200
+class ScreenManager:
+    STATS_BOX_WIDTH: int = 200
     MESSAGE_BOX_HEIGHT: int = 64
     PIXELES: int = Constantes.PIXELES.value
 
-    # Iniciamos la ventana principal.
-    screen: Surface = None
-
-    # Iniciamos la mazmorra.
-    mazmorra: Mazmorra = None
-
     def __init__(self, SCREEN_ANCHO: int, SCREEN_ALTO: int):
-        """
-        Constructor de la clase.
-        """
-
-        global screen
-        global panelMazmorra
-        global panelMensajes
-        global panelEstadisticas
-        global mazmorra
-
-        # Inicializamos los modulos de Pygame.
         pygame.init()
         font = pygame.font.match_font("Ubuntu Mono")
 
@@ -49,14 +28,18 @@ class GameStart:
         self.screenHeight: int = SCREEN_ALTO
 
         # Creamos la ventana principal de la App.
-        self.screen = pygame.display.set_mode((SCREEN_ANCHO + self.STATS_BOX_WIDTH, SCREEN_ALTO + self.MESSAGE_BOX_HEIGHT), 0, 32)
+        self.screen = pygame.display.set_mode(
+            (SCREEN_ANCHO + self.STATS_BOX_WIDTH,
+             SCREEN_ALTO + self.MESSAGE_BOX_HEIGHT), 0, 32)
 
         # Le damos un titulo a la ventana.
         pygame.display.set_caption("Experimental 0.0.6 Estable")
 
         # Lazy loading of screen
         self.screenInGame: IScreen | None = None
-        self.screenMenu: IScreen = ScreenMenu(self, "My Game", ["Jugar", "Opciones", "Salir"], fuente=font, fuente_size=40)
+        self.screenMenu: IScreen = ScreenMenu(
+            self,"My Game", ["Jugar", "Opciones", "Salir"],
+            fuente=font, fuente_size=40)
         # Reference the first scene in the start of app
         self.currentScene: IScreen = self.screenMenu
 
@@ -101,12 +84,3 @@ class GameStart:
         else:
             textoRect.topleft = (x, y)
         return self.screen.blit(textoSurface, textoRect)
-
-    def OnGameOver(self):
-        """
-        Este metodo es llamado cuando el Jugador muere.
-        Esperamos 5 segundos antes de salir del programa.
-        """
-        time.sleep(5)
-        self.isRunning = False
-
