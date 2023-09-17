@@ -22,6 +22,7 @@ from Source.GameObjects.Player import Player
 from Source.GamePaneles.PanelEstadisticas import PanelEstadisticas
 from Source.GamePaneles.PanelMazmorra import PanelMazmorra
 from Source.GamePaneles.PanelMensajes import PanelMensajes
+from Source.GameScreens.GameMenu import GameMenu
 from Source.GameSystemBatalla import SystemBattle
 
 
@@ -63,6 +64,11 @@ class GameStart:
 
         # Inicializamos los modulos de Pygame.
         pygame.init()
+        font = pygame.font.match_font("Ubuntu Mono")
+
+        self.isRunning: bool = True
+        self.screenWidth: int = SCREEN_ANCHO
+        self.screenHeight: int = SCREEN_ALTO
 
         # Creamos la ventana principal de la App.
         self.screen = pygame.display.set_mode((SCREEN_ANCHO + self.STATS_BOX_WIDTH, SCREEN_ALTO + self.MESSAGE_BOX_HEIGHT), 0, 32)
@@ -78,16 +84,8 @@ class GameStart:
         panelMensajes = PanelMensajes(self.screen)
         panelEstadisticas = PanelEstadisticas(self.screen)
 
-    def OnInitGame(self, SCREEN_ANCHO: int, SCREEN_ALTO: int) -> None:
-        """
-        Inicializa y configura el juego al iniciar la App.
-        @param SCREEN_ANCHO: the map(playable area) width
-        @type SCREEN_ANCHO: int
-        @param SCREEN_ALTO: the map(playable area) height
-        @type SCREEN_ALTO: int
-        """
-
-        global mazmorra
+        Menu = GameMenu(self, "My Game", ["Jugar", "Opciones", "Salir"], fuente=font, fuente_size=40)
+        Menu.run()
 
         #load monster images
         monster_images = [
@@ -100,8 +98,193 @@ class GameStart:
 
         monster_tiles = [pygame.image.load(img).convert_alpha() for img in monster_images]
 
-        #Run game
-        self.OnRunGame(mazmorra, monster_tiles, SCREEN_ALTO, SCREEN_ANCHO)
+        # create player object
+        self.player = Factory().onFactoryJugador(self.screen, mazmorra, self.mazmorraLevel)
+
+        #Make list of monsters
+        self.monsters = Factory().OnFactoryMonsters(self.screen, mazmorra, monster_tiles, self.mazmorraLevel)
+        self.items = Factory().OnFactoryItems(self.screen, mazmorra)
+
+
+        self.gameMessage: str = ""
+
+    def IsRunning(self) -> bool:
+        return self.isRunning
+
+    def Clear(self):
+        pass
+
+    def Update(self):
+        #get clock so we can control frames per second
+        clock = pygame.time.Clock()
+        clock.tick(5)  # Limit the screen to 5 FPS
+
+        # Divide by 16 to get correct tile index
+        panelMazmorra.dibujarMapa()
+
+        # draw player, monsters and items
+        self.player.dibujar()
+
+        for m in self.monsters:
+            m.dibujar()
+
+        for i in self.items:
+            i.dibujar()
+
+        # Make stats box and display it
+        panelEstadisticas.mostrarEstadisticas(self.player, self.mazmorraLevel)
+
+        # Display
+        pygame.display.flip()
+
+    def Events(self):
+        global mazmorra
+
+        for event in pygame.event.get():
+
+            # player clicked close button
+            if event.type == pygame.QUIT:
+                self.OnExitApp()
+
+            # a key has been pressed
+            if event.type == pygame.KEYDOWN:
+
+                # move player
+                self.player.handleKey(event, self.monsters)
+                gameMessage = self.monsterMoveAndAttack(self.monsters, self.player, self.screen)
+
+                if event.key == pygame.K_s:
+                    # Use item
+                    gameMessage = self.monsterMoveAndAttack(self.monsters, self.player, self.screen)
+
+                    for item in self.items:
+                        if item.coordenada.equals(self.player.coordenada):
+                            if item.getTag() == Tag.PUERTA.value:
+                                # Increase dungeonlevel
+                                # make new cave
+                                self.mazmorraLevel += 1
+                                cave = Mazmorra().InitMazmorra(self.screen)
+                                # El nuevo mundo lo pasamos por parametro.
+                                panelMazmorra.setMundo(cave)
+                                # update player object
+                                self.player.update(cave, Punto(random.randrange(0, self.screenWidth / 16),
+                                                          random.randrange(0, self.screenHeight / 16)))
+                                # make new monster list
+                                monsters = Factory().OnFactoryMonsters(self.screen, cave, self.monster_tiles,
+                                                                       self.mazmorraLevel)
+                                items = Factory().OnFactoryItems(self.screen, cave)
+                                gameMessage = "Nuevo nivel de mazmorra! " + gameMessage
+                                panelMensajes.mostrarMensaje(gameMessage)
+
+                            elif item.getTag() == Tag.ARMAS.value:
+                                self.player.incrementarAtaqueFisico(item.usarBonusItem())
+                                gameMessage = "Has recogido una espada! Tu poder de ataque se incrementa en " + str(
+                                    item.usarBonusItem()) \
+                                              + "! " + gameMessage
+                                items.remove(item)
+                                panelMensajes.mostrarMensaje(gameMessage)
+
+                            elif item.getTag() == Tag.ARMADURA.value:
+                                self.player.incrementarDefensa(item.usarBonusItem())
+                                gameMessage = "Has recogido una pieza de armadura! Tu armadura se incrementa en " + str(
+                                    item.usarBonusItem()) \
+                                              + "! " + gameMessage
+                                items.remove(item)
+                                panelMensajes.mostrarMensaje(gameMessage)
+
+                            elif item.getTag() == Tag.POCION.value:
+                                self.player.incrementarVitalidad(item.usarBonusItem())
+                                gameMessage = "Has recogido una pocion! Hit points increased by " + str(
+                                    item.usarBonusItem()) \
+                                              + "! " + gameMessage
+
+                                items.remove(item)
+                                panelMensajes.mostrarMensaje(gameMessage)
+
+
+                # player attack (A key pressed)
+                elif event.key == pygame.K_a:
+
+                    attackDir = 'D'  # DEFAULT DIRECTION
+
+                    panelMensajes.mostrarMensaje("Donde quieres atacar?")
+                    pygame.display.flip()
+                    pygame.event.set_blocked(pygame.KEYUP)  # Block KEYUP so its not added to the event queue
+                    attackWhere = pygame.event.wait()  # Wait for an event
+
+                    # get attack direction
+                    if attackWhere.key == pygame.K_DOWN:
+                        attackDir = 'D'
+
+                    elif attackWhere.key == pygame.K_UP:
+                        attackDir = 'U'
+
+                    elif attackWhere.key == pygame.K_LEFT:
+                        attackDir = 'L'
+
+                    elif attackWhere.key == pygame.K_RIGHT:
+                        attackDir = 'R'
+
+                    # calculate battle outcome
+                    battleresult = SystemBattle.playerAttack(self.monsters, self.player, attackDir)
+                    monsterAttackMessage = self.monsterMoveAndAttack(self.monsters, self.player, self.screen)
+
+                    if battleresult[0]:
+                        gameMessage = "Golpeas al enemigo por {0}! Has matado al enemigo! ".format(
+                            str(battleresult[1])) + \
+                                      monsterAttackMessage
+                        panelMensajes.mostrarMensaje(gameMessage)
+
+                    elif battleresult[1] == 0:
+                        gameMessage = "No hay nada que golpear aqui! {0}".format(monsterAttackMessage)
+                        panelMensajes.mostrarMensaje(gameMessage)
+
+                    else:
+                        gameMessage = "Golpeas al enemigo por {0}! {1}".format(str(battleresult[1]),
+                                                                               monsterAttackMessage)
+                        panelMensajes.mostrarMensaje(gameMessage)
+
+                    self.removeMonster(self.monsters)
+
+                # Dig down wall(D key pressed)
+                elif event.key == pygame.K_d:
+
+                    panelMensajes.mostrarMensaje("Donde quieres cavar?")
+                    pygame.display.flip()
+
+                    pygame.event.set_blocked(pygame.KEYUP)  # Block KEYUP so its not added to the event queue
+                    digWhere = pygame.event.wait()  # Wait for an event
+
+                    try:
+                        if digWhere.key == pygame.K_DOWN:
+                            Mazmorra().actualizarMazmorra(self.screen, mazmorra, 'D', self.player.coordenada.getCoordenadaX(),
+                                                          self.player.coordenada.getCoordenadaY())
+                            gameMessage = "You dig down"
+                            panelMensajes.mostrarMensaje(gameMessage)
+
+                        elif digWhere.key == pygame.K_UP:
+                            Mazmorra().actualizarMazmorra(self.screen, mazmorra, 'U', self.player.coordenada.getCoordenadaX(),
+                                                          self.player.coordenada.getCoordenadaY())
+                            gameMessage = "You dig up"
+                            panelMensajes.mostrarMensaje(gameMessage)
+
+                        elif digWhere.key == pygame.K_LEFT:
+                            Mazmorra().actualizarMazmorra(self.screen, mazmorra, 'L', self.player.coordenada.getCoordenadaX(),
+                                                          self.player.coordenada.getCoordenadaY())
+                            gameMessage = "You dig left"
+                            panelMensajes.mostrarMensaje(gameMessage)
+
+                        elif digWhere.key == pygame.K_RIGHT:
+                            Mazmorra().actualizarMazmorra(self.screen, mazmorra, 'R', self.player.coordenada.getCoordenadaX(),
+                                                          self.player.coordenada.getCoordenadaY())
+                            gameMessage = "You dig right"
+                            panelMensajes.mostrarMensaje(gameMessage)
+
+                        gameMessage = self.monsterMoveAndAttack(self.monsters, self.player, self.screen)
+                    except:
+                        print("DEBUG: Event bugged out")
+
+                break  # only one event is handled at a time, so break out of the event loop after one event is finished
 
 
     def OnRunGame(self, cave: object, monster_tiles: list, SCREEN_ALTO: int, SCREEN_ANCHO: int):
@@ -124,176 +307,6 @@ class GameStart:
         global panelMensajes
         global panelEstadisticas
         global mazmorra
-
-        # create player object
-        player = Factory().onFactoryJugador(self.screen, mazmorra, self.mazmorraLevel)
-
-        #Make list of monsters
-        monsters = Factory().OnFactoryMonsters(self.screen, cave, monster_tiles, self.mazmorraLevel)
-        items = Factory().OnFactoryItems(self.screen, cave)
-
-        #get clock so we can control frames per second
-        clock = pygame.time.Clock()
-        gameMessage: str = ""
-
-        #Main game loop - should probably be refactored (if time)
-        while True:
-
-            clock.tick(5) #Limit the screen to 5 FPS
-
-            #go through events
-            for event in pygame.event.get():
-
-                #player clicked close button
-                if event.type == pygame.QUIT:
-                    self.OnExitApp()
-
-                #a key has been pressed
-                if event.type == pygame.KEYDOWN:
-
-                    #move player
-                    player.handleKey(event, monsters)
-                    gameMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
-
-                    if event.key == pygame.K_s:
-                        #Use item
-                        gameMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
-
-                        for item in items:
-                            if item.coordenada.equals(player.coordenada):
-                                if item.getTag() == Tag.PUERTA.value:
-                                    #Increase dungeonlevel
-                                    #make new cave
-                                    self.mazmorraLevel += 1
-                                    cave = Mazmorra().InitMazmorra(self.screen)
-                                    # El nuevo mundo lo pasamos por parametro.
-                                    panelMazmorra.setMundo(cave)
-                                    #update player object
-                                    player.update(cave, Punto(random.randrange(0, SCREEN_ANCHO / 16), random.randrange(0, SCREEN_ALTO / 16)))
-                                    #make new monster list
-                                    monsters = Factory().OnFactoryMonsters(self.screen, cave, monster_tiles, self.mazmorraLevel)
-                                    items = Factory().OnFactoryItems(self.screen, cave)
-                                    gameMessage = "Nuevo nivel de mazmorra! " + gameMessage
-                                    panelMensajes.mostrarMensaje( gameMessage )
-
-                                elif item.getTag() == Tag.ARMAS.value:
-                                    player.incrementarAtaqueFisico(item.usarBonusItem())
-                                    gameMessage = "Has recogido una espada! Tu poder de ataque se incrementa en " + str(item.usarBonusItem()) \
-                                                   + "! " + gameMessage
-                                    items.remove(item)
-                                    panelMensajes.mostrarMensaje( gameMessage )
-
-                                elif item.getTag() == Tag.ARMADURA.value:
-                                    player.incrementarDefensa(item.usarBonusItem())
-                                    gameMessage = "Has recogido una pieza de armadura! Tu armadura se incrementa en " + str(item.usarBonusItem()) \
-                                                   + "! " + gameMessage
-                                    items.remove(item)
-                                    panelMensajes.mostrarMensaje( gameMessage )
-
-                                elif item.getTag() == Tag.POCION.value:
-                                    player.incrementarVitalidad(item.usarBonusItem())
-                                    gameMessage = "Has recogido una pocion! Hit points increased by " + str(item.usarBonusItem()) \
-                                                   + "! " + gameMessage
-
-                                    items.remove(item)
-                                    panelMensajes.mostrarMensaje( gameMessage )
-
-
-                    #player attack (A key pressed)
-                    elif event.key == pygame.K_a:
-
-                        attackDir = 'D' #DEFAULT DIRECTION
-
-                        panelMensajes.mostrarMensaje( "Donde quieres atacar?")
-                        pygame.display.flip()
-                        pygame.event.set_blocked(pygame.KEYUP)      #Block KEYUP so its not added to the event queue
-                        attackWhere = pygame.event.wait()           #Wait for an event
-
-                        #get attack direction
-                        if attackWhere.key == pygame.K_DOWN:
-                            attackDir = 'D'
-
-                        elif attackWhere.key == pygame.K_UP:
-                            attackDir = 'U'
-
-                        elif attackWhere.key == pygame.K_LEFT:
-                            attackDir = 'L'
-
-                        elif attackWhere.key == pygame.K_RIGHT:
-                            attackDir = 'R'
-
-                        #calculate battle outcome
-                        battleresult = SystemBattle.playerAttack(monsters, player, attackDir)
-                        monsterAttackMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
-
-                        if battleresult[0]:
-                            gameMessage = "Golpeas al enemigo por {0}! Has matado al enemigo! ".format(str(battleresult[1])) + \
-                            monsterAttackMessage
-                            panelMensajes.mostrarMensaje( gameMessage )
-
-                        elif battleresult[1] == 0:
-                            gameMessage = "No hay nada que golpear aqui! {0}".format(monsterAttackMessage)
-                            panelMensajes.mostrarMensaje( gameMessage )
-
-                        else:
-                            gameMessage = "Golpeas al enemigo por {0}! {1}".format(str(battleresult[1]), monsterAttackMessage)
-                            panelMensajes.mostrarMensaje( gameMessage )
-
-                        self.removeMonster(monsters)
-
-                    #Dig down wall(D key pressed)
-                    elif event.key == pygame.K_d:
-
-                        panelMensajes.mostrarMensaje( "Donde quieres cavar?" )
-                        pygame.display.flip()
-
-                        pygame.event.set_blocked(pygame.KEYUP) #Block KEYUP so its not added to the event queue
-                        digWhere = pygame.event.wait()         #Wait for an event
-
-                        try:
-                            if digWhere.key == pygame.K_DOWN:
-                                Mazmorra().actualizarMazmorra(self.screen, cave, 'D', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
-                                gameMessage = "You dig down"
-                                panelMensajes.mostrarMensaje( gameMessage )
-
-                            elif digWhere.key == pygame.K_UP:
-                                Mazmorra().actualizarMazmorra(self.screen, cave, 'U', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
-                                gameMessage = "You dig up"
-                                panelMensajes.mostrarMensaje( gameMessage )
-
-                            elif digWhere.key == pygame.K_LEFT:
-                                Mazmorra().actualizarMazmorra(self.screen, cave, 'L', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
-                                gameMessage = "You dig left"
-                                panelMensajes.mostrarMensaje( gameMessage )
-
-                            elif digWhere.key == pygame.K_RIGHT:
-                                Mazmorra().actualizarMazmorra(self.screen, cave, 'R', player.coordenada.getCoordenadaX(), player.coordenada.getCoordenadaY())
-                                gameMessage = "You dig right"
-                                panelMensajes.mostrarMensaje( gameMessage )
-
-                            gameMessage = self.monsterMoveAndAttack(monsters, player, self.screen)
-                        except:
-                            print ("DEBUG: Event bugged out")
-
-                    break #only one event is handled at a time, so break out of the event loop after one event is finished
-
-            #Divide by 16 to get correct tile index
-            panelMazmorra.dibujarMapa()
-
-            #draw player, monsters and items
-            player.dibujar()
-
-            for m in monsters:
-                m.dibujar()
-
-            for i in items:
-                i.dibujar()
-
-            #Make stats box and display it
-            panelEstadisticas.mostrarEstadisticas(player, self.mazmorraLevel)
-
-            #Display
-            pygame.display.flip()
 
     def monsterMoveAndAttack(self, monsters: list, player: Player, screen: Surface):
         """
