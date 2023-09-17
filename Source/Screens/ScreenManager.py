@@ -8,10 +8,10 @@
 import pygame
 
 from Source.Enum.Constantes import Constantes
-from Source.GameScreens.IScreen import IScreen
-from Source.GameScreens.NextScene import NextScene
-from Source.GameScreens.ScreenInGame import ScreenInGame
-from Source.GameScreens.ScreenMenu import ScreenMenu
+from Source.Screens.IScreen import IScreen
+from Source.Screens.NextScene import NextScene
+from Source.Screens.ScreenInGame import ScreenInGame
+from Source.Screens.ScreenMenu import ScreenMenu
 
 
 class ScreenManager:

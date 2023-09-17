@@ -9,8 +9,8 @@ from Source.GameMundo.Mazmorra import Mazmorra
 from Source.GamePaneles.PanelEstadisticas import PanelEstadisticas
 from Source.GamePaneles.PanelMazmorra import PanelMazmorra
 from Source.GamePaneles.PanelMensajes import PanelMensajes
-from Source.GameScreens.IScreen import IScreen
-from Source.GameScreens.NextScene import NextScene
+from Source.Screens.IScreen import IScreen
+from Source.Screens.NextScene import NextScene
 from Source.GameSystemBatalla import SystemBattle
 
 

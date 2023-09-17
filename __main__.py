@@ -5,7 +5,7 @@
 # @Email: andres6936@gmail.com
 # @Email: andres6936@live.com
 
-from Source.GameScreens.ScreenManager import ScreenManager
+from Source.Screens.ScreenManager import ScreenManager
 
 # Constants for the playable field. Must be dividable with 16 (tile size in pixels)
 SCREEN_ALTO: int = 512

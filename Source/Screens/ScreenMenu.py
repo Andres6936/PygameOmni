@@ -8,8 +8,8 @@
 import pygame
 
 from GUI.Boton import Boton
-from Source.GameScreens.IScreen import IScreen
-from Source.GameScreens.NextScene import NextScene
+from Source.Screens.IScreen import IScreen
+from Source.Screens.NextScene import NextScene
 
 
 class ScreenMenu(IScreen):

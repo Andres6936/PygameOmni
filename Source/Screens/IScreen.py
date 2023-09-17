@@ -7,7 +7,7 @@
 
 from abc import ABC, abstractmethod
 
-from Source.GameScreens.NextScene import NextScene
+from Source.Screens.NextScene import NextScene
 
 
 class IScreen(ABC):
