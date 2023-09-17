@@ -286,28 +286,6 @@ class GameStart:
 
                 break  # only one event is handled at a time, so break out of the event loop after one event is finished
 
-
-    def OnRunGame(self, cave: object, monster_tiles: list, SCREEN_ALTO: int, SCREEN_ANCHO: int):
-        """
-        Run the game and the contains the main game loop
-        @param cave: the map
-        @type cave: object
-        @param player: the player object
-        @type player: Player
-        @param monster_tiles: monster images
-        @type monster_tiles: list
-        @param SCREEN_ALTO: the map heith (playable area) in pixels
-        @type SCREEN_ALTO: int
-        @param SCREEN_ANCHO: the map width (playable area) in pixels
-        @type SCREEN_ANCHO: int
-        """
-
-        global screen
-        global panelMazmorra
-        global panelMensajes
-        global panelEstadisticas
-        global mazmorra
-
     def monsterMoveAndAttack(self, monsters: list, player: Player, screen: Surface):
         """
         Monsters can move and attack the player
