@@ -6,7 +6,6 @@
 """
 
 import random
-import sys
 import time
 
 import pygame
@@ -108,6 +107,11 @@ class GameStart:
 
         self.gameMessage: str = ""
 
+    def __del__(self):
+        # Call pygame.quit when the lifetime of object is over,
+        # also called destructor.
+        pygame.quit()
+
     def IsRunning(self) -> bool:
         return self.isRunning
 
@@ -144,7 +148,7 @@ class GameStart:
 
             # player clicked close button
             if event.type == pygame.QUIT:
-                self.OnExitApp()
+                self.isRunning = False
 
             # a key has been pressed
             if event.type == pygame.KEYDOWN:
@@ -347,12 +351,5 @@ class GameStart:
         Esperamos 5 segundos antes de salir del programa.
         """
         time.sleep(5)
-        self.OnExitApp()
-
-    def OnExitApp(self):
-        """
-        Salimos de la App.
-        """
-        pygame.quit()
-        sys.exit(0)
+        self.isRunning = False
 
