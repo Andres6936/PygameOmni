@@ -5,14 +5,14 @@
 # @Email: andres6936@gmail.com
 # @Email: andres6936@live.com
 
-import sys
-
 import pygame
 
 from GUI.Boton import Boton
+from Source.GameScreens.IScreen import IScreen
+from Source.GameScreens.NextScene import NextScene
 
 
-class GameMenu:
+class ScreenMenu(IScreen):
 
     def __init__(self, app, titulo, items, bg_color=(0, 0, 0), bg_imagen=None,
                  fuente=None, fuente_size=30, color=(255, 255, 255), hcolor=(255, 0, 0),
@@ -57,7 +57,8 @@ class GameMenu:
             self.cur_item = 0
         else:
             if key == pygame.K_RETURN:
-                self.go()
+                pass
+                # self.go()
             elif key == pygame.K_UP:
                 self.cur_item -= 1
             elif key == pygame.K_DOWN:
@@ -67,50 +68,48 @@ class GameMenu:
 
         self.items[self.cur_item].setColor(self.hcolor)
 
-    def go(self):
-        # Ejecutamos la acción del item seleccionado.
-        if self.cur_item is None:
-            return
-        if self.items[self.cur_item].texto == "Salir":
-            pygame.quit()
-            sys.exit()
-        elif self.items[self.cur_item].texto == "Jugar":
-            self.running = False
+    def Draw(self):
+        pass
 
-    def run(self):
-        self.running = True
-        while self.running:
-            self.clock.tick(30)
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if evento.type == pygame.KEYDOWN:
-                    if evento.key == pygame.K_ESCAPE:
-                        pygame.quit()
-                        sys.exit()
-                    elif evento.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_RETURN]:
-                        self.mouse_visible = False
-                        self.setKeyBSeleccionado(evento.key)
-                if evento.type == pygame.MOUSEBUTTONDOWN:
-                    for item in self.items:
-                        if item.isSeleccionadoMouse():
-                            self.go()
+    def Clear(self):
+        pass
 
-            if pygame.mouse.get_rel() != (0, 0):
-                self.mouse_visible = True
-                self.cur_item = None
+    def Update(self) -> NextScene:
+        self.clock.tick(30)
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                return NextScene.EXIT
+            if evento.type == pygame.KEYDOWN:
+                if evento.key == pygame.K_ESCAPE:
+                    return NextScene.EXIT
+                elif evento.key in [pygame.K_UP, pygame.K_DOWN, pygame.K_RETURN]:
+                    self.mouse_visible = False
+                    self.setKeyBSeleccionado(evento.key)
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                for item in self.items:
+                    if item.isSeleccionadoMouse():
+                        if self.cur_item is None:
+                            return NextScene.NONE
+                        if self.items[self.cur_item].texto == "Salir":
+                            return NextScene.EXIT
+                        elif self.items[self.cur_item].texto == "Jugar":
+                            return NextScene.IN_GAME
 
-            pygame.mouse.set_visible(self.mouse_visible)
-            self.app.screen.fill((0, 0, 0))
-            if self.bg_imagen:
-                self.app.screen.blit(self.bg_imagen, (0, 0))
+        if pygame.mouse.get_rel() != (0, 0):
+            self.mouse_visible = True
+            self.cur_item = None
 
-            if type(self.titulo) is str:
-                self.app.DibujarTexto(self.titulo, 40, self.app.screen.get_width() / 2, 40)
+        pygame.mouse.set_visible(self.mouse_visible)
+        self.app.screen.fill((0, 0, 0))
+        if self.bg_imagen:
+            self.app.screen.blit(self.bg_imagen, (0, 0))
 
-            for item in self.items:
-                if self.mouse_visible:
-                    self.setMouseHover(item)
-                self.app.screen.blit(item.label, item.posXY)
-            pygame.display.flip()
+        if type(self.titulo) is str:
+            self.app.DibujarTexto(self.titulo, 40, self.app.screen.get_width() / 2, 40)
+
+        for item in self.items:
+            if self.mouse_visible:
+                self.setMouseHover(item)
+            self.app.screen.blit(item.label, item.posXY)
+        pygame.display.flip()
+        return NextScene.NONE

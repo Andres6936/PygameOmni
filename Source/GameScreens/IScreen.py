@@ -7,10 +7,12 @@
 
 from abc import ABC, abstractmethod
 
+from Source.GameScreens.NextScene import NextScene
+
 
 class IScreen(ABC):
     @abstractmethod
-    def Update(self):
+    def Update(self) -> NextScene:
         pass
 
     @abstractmethod

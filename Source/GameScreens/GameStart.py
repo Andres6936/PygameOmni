@@ -12,27 +12,22 @@ from pygame import Surface
 
 from Source.Enum.Constantes import Constantes
 from Source.GameMundo.Mazmorra import Mazmorra
-from Source.GameScreens.GameMenu import GameMenu
+from Source.GameScreens.IScreen import IScreen
+from Source.GameScreens.NextScene import NextScene
+from Source.GameScreens.ScreenInGame import ScreenInGame
+from Source.GameScreens.ScreenMenu import ScreenMenu
 
 
 class GameStart:
-
-    # CONSTANTES DE LA APP
-
     STATS_BOX_WIDTH:    int = 200
     MESSAGE_BOX_HEIGHT: int = 64
-
     PIXELES: int = Constantes.PIXELES.value
-
-    # ATRIBUTOS DE LA APP
 
     # Iniciamos la ventana principal.
     screen: Surface = None
 
     # Iniciamos la mazmorra.
     mazmorra: Mazmorra = None
-
-
 
     def __init__(self, SCREEN_ANCHO: int, SCREEN_ALTO: int):
         """
@@ -59,8 +54,11 @@ class GameStart:
         # Le damos un titulo a la ventana.
         pygame.display.set_caption("Experimental 0.0.6 Estable")
 
-        Menu = GameMenu(self, "My Game", ["Jugar", "Opciones", "Salir"], fuente=font, fuente_size=40)
-        Menu.run()
+        # Lazy loading of screen
+        self.screenInGame: IScreen | None = None
+        self.screenMenu: IScreen = ScreenMenu(self, "My Game", ["Jugar", "Opciones", "Salir"], fuente=font, fuente_size=40)
+        # Reference the first scene in the start of app
+        self.currentScene: IScreen = self.screenMenu
 
     def __del__(self):
         # Call pygame.quit when the lifetime of object is over,
@@ -71,13 +69,19 @@ class GameStart:
         return self.isRunning
 
     def Clear(self):
-        pass
+        self.currentScene.Clear()
 
     def Draw(self):
-        pass
+        self.currentScene.Draw()
 
     def Update(self):
-        pass
+        nextScene = self.currentScene.Update()
+        if nextScene == NextScene.EXIT:
+            self.isRunning = False
+        elif nextScene == NextScene.IN_GAME:
+            self.screenInGame = ScreenInGame(self)
+            # Reference the new scene
+            self.currentScene = self.screenInGame
 
     def Surface(self):
         return self.screen
