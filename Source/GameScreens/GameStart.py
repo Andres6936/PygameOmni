@@ -117,7 +117,7 @@ class GameStart:
     def Update(self):
         #get clock so we can control frames per second
         clock = pygame.time.Clock()
-        clock.tick(5)  # Limit the screen to 5 FPS
+        clock.tick(30)  # Limit the screen to 5 FPS
 
         # Divide by 16 to get correct tile index
         panelMazmorra.dibujarMapa()
