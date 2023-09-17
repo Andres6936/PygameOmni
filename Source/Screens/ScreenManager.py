@@ -63,7 +63,8 @@ class ScreenManager(IScreenManager):
         if nextScene == NextScene.EXIT:
             self.isRunning = False
         elif nextScene == NextScene.IN_GAME:
-            self.screenInGame = ScreenInGame(self)
+            if self.screenInGame is None:
+                self.screenInGame = ScreenInGame(self)
             # Reference the new scene
             self.currentScene = self.screenInGame
 
@@ -75,13 +76,3 @@ class ScreenManager(IScreenManager):
 
     def ScreenHeight(self):
         return self.screenHeight
-
-    def DibujarTexto(self, texto, size, x, y, center=True):
-        fuenteName = pygame.font.SysFont("arial", 30)
-        textoSurface = fuenteName.render(texto, True, (255, 255, 255))
-        textoRect = textoSurface.get_rect()
-        if center:
-            textoRect.midtop = (x, y)
-        else:
-            textoRect.topleft = (x, y)
-        return self.screen.blit(textoSurface, textoRect)

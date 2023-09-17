@@ -40,6 +40,16 @@ class ScreenMenu(IScreen):
             menu_item.setPosicionXY(posX, posY)
             self.items.append(menu_item)
 
+    def DibujarTexto(self, texto, size, x, y, center=True):
+        fuenteName = pygame.font.SysFont("arial", 30)
+        textoSurface = fuenteName.render(texto, True, (255, 255, 255))
+        textoRect = textoSurface.get_rect()
+        if center:
+            textoRect.midtop = (x, y)
+        else:
+            textoRect.topleft = (x, y)
+        return self.screen.blit(textoSurface, textoRect)
+
     def setMouseHover(self, item):
         # Resaltamos el item que se encuentra sobre el mouse.
         if item.isSeleccionadoMouse():
@@ -105,7 +115,7 @@ class ScreenMenu(IScreen):
             self.app.screen.blit(self.bg_imagen, (0, 0))
 
         if type(self.titulo) is str:
-            self.app.DibujarTexto(self.titulo, 40, self.app.screen.get_width() / 2, 40)
+            self.DibujarTexto(self.titulo, 40, self.app.screen.get_width() / 2, 40)
 
         for item in self.items:
             if self.mouse_visible:
