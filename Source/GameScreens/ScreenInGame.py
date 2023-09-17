@@ -10,6 +10,7 @@ from Source.GamePaneles.PanelEstadisticas import PanelEstadisticas
 from Source.GamePaneles.PanelMazmorra import PanelMazmorra
 from Source.GamePaneles.PanelMensajes import PanelMensajes
 from Source.GameScreens.IScreen import IScreen
+from Source.GameScreens.NextScene import NextScene
 from Source.GameSystemBatalla import SystemBattle
 
 
@@ -52,15 +53,14 @@ class ScreenInGame(IScreen):
 
         self.gameMessage: str = ""
 
-
-    def Update(self):
+    def Update(self) -> NextScene:
         global mazmorra
 
         for event in pygame.event.get():
 
             # player clicked close button
             if event.type == pygame.QUIT:
-                self.isRunning = False
+                return NextScene.EXIT
 
             # a key has been pressed
             if event.type == pygame.KEYDOWN:
@@ -205,6 +205,7 @@ class ScreenInGame(IScreen):
                         print("DEBUG: Event bugged out")
 
                 break  # only one event is handled at a time, so break out of the event loop after one event is finished
+        return NextScene.NONE
 
     def Draw(self):
         # get clock so we can control frames per second
@@ -243,25 +244,26 @@ class ScreenInGame(IScreen):
         global panelMensajes
         global panelEstadisticas
 
-        #go through the monsters one at a time
+        # go through the monsters one at a time
         for m in monsters:
             checkIfFoundPlayer = m.encontrarJugador(player, monsters)
 
-            #if -1 is returned, the player is not nearby
+            # if -1 is returned, the player is not nearby
             if checkIfFoundPlayer == -1:
                 m.walk(monsters, player)
 
-        #Monster attack!
+        # Monster attack!
         monsterAttackResult = SystemBattle.monsterAttack(monsters, player)
 
-        #player died
+        # player died
         if monsterAttackResult[0]:
 
             panelEstadisticas.mostrarEstadisticas(player, self.mazmorraLevel)
-            panelMensajes.mostrarMensaje("The monster(s) around you slaughtered you for {0} HP! Tu mueres!".format(str(monsterAttackResult[1])))
+            panelMensajes.mostrarMensaje(
+                "The monster(s) around you slaughtered you for {0} HP! Tu mueres!".format(str(monsterAttackResult[1])))
             pygame.display.flip()
             self.sceneManager.OnGameOver()
-        #player still alive
+        # player still alive
         else:
             if monsterAttackResult[1] != 0:
                 return "El enemigo te golpea por " + str(monsterAttackResult[1]) + " HP!"
